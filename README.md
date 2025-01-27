@@ -25,4 +25,6 @@ As for the future, it's very abstract: one idea was to connect this dashboard to
 
 Also, statistics. I would like to use Pandas to elaborate on the tests done, making graphs, evaluating performance and so on. Just for fun.
 
+I'm sure elaborating on the UI will also become a necessity. Tkinter is pretty fugly.
+
 Finally, language support, for no other reason than the fact that I wanna learn how it's done.
