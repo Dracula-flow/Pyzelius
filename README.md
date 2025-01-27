@@ -1,5 +1,4 @@
 # Pyzelius 1.0
-
 ## What is it?
 A dashboard designed to improve workflow for manual testing, written in Python. I created it both as a tool to be used in my work, and as a little side project to kill time.
 
