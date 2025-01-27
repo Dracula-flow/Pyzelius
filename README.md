@@ -4,7 +4,7 @@
 A dashboard designed to improve workflow for manual testing, written in Python. I created it both as a tool to be used in my work, and as a little side project to kill time.
 
 # How did you build it?
-With some help from a LLM, I structured a GUI with Python's native library Tkintr, and bound relevant classes and functions to it via a Controller file (also called business logic file). These were very new concepts to me. 
+With some help from a LLM, I structured a GUI with Python's native library Tkintr, and bound relevant classes and functions to it via a Controller file (also called business logic file).
 
 I tried to use Classes as much as possible, and to respect the old "one method, one job" mindset. 
 
