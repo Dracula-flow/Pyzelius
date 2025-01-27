@@ -25,3 +25,5 @@ Ideally, version 2.0 will include a way to create, store and modify the "signatu
 As for the future, it's very abstract: one idea was to connect this dashboard to a SQLite database, in order to store the defects and be able to trace back to them and update their status whenever needed. I doubt the practicality, but I'm enthused by the possibility.
 
 Also, statistics. I would like to use Pandas to elaborate on the tests done, making graphs, evaluating performance and so on. Just for fun.
+
+Finally, language support, for no other reason than the fact that I wanna learn how it's done.
