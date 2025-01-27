@@ -2,13 +2,13 @@ import csv,os
 from datetime import datetime as dt
 import pandas as pd
 import openpyxl as op
-
+from src.Functions import time_responser
 # Una classe per creare i CSV file da buttare nei dataframe, partendo dai file di una cartella
 # Divisione per Defects e Passed
 class CSV_File:
     def __init__(self, prefix):
         self.prefix = prefix
-        self.filename = f"{self.prefix}_{dt.now().strftime('%d-%m-%Y')}.csv"
+        self.filename = f"{self.prefix}_{time_responser('date')}.csv"
     
     # Gli headers hanno bisogno di un argument, di solito, per convenzione credo.
     # Quando non ne hanno bisogno, li si dichiara metodi di classe con questo override, e si scrive cls nei parametri.
@@ -47,7 +47,7 @@ class CSV_File:
 # Genera i dataframe dai CVS e li mette in un excel, formattato secondo le esigenze
 class Report:
     def __init__(self):
-        self.filename = f"Report_{dt.now().strftime('%d-%m-%Y')}.xlsx"
+        self.filename = f"Report_{time_responser('date')}.xlsx"
 
     def data_feed(self):
         # Crea un file excel e carica il dataframe sul primo excel sheet
@@ -92,7 +92,7 @@ class Report:
 class WorkTree:
     def __init__(self,path):
         self.path = path
-        self.dirname = dt.now().strftime('%d-%m-%Y')
+        self.dirname = time_responser('date')
         self.subdirs = ("Passed","Defects", "Report")
 
     def create_worktree(self):
