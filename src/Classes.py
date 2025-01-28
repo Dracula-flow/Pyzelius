@@ -1,8 +1,8 @@
 import csv,os
-from datetime import datetime as dt
 import pandas as pd
 import openpyxl as op
-from src.Functions import time_responser
+from src.Functions import time_responser, get_path
+
 # Una classe per creare i CSV file da buttare nei dataframe, partendo dai file di una cartella
 # Divisione per Defects e Passed
 class CSV_File:
@@ -36,7 +36,6 @@ class CSV_File:
 
         return rows
 
-
     def create_file(self, headers, rows):
         # Creazione del file CSV con intestazione e righe di dati
         with open(self.filename, mode='w', newline='') as file:
@@ -51,11 +50,11 @@ class Report:
 
     def data_feed(self):
         # Crea un file excel e carica il dataframe sul primo excel sheet
-        df_passed = pd.read_csv(r"D:\Users\Principale\Desktop\Report_Maker_v0.1\Passed_26-01-2025.csv")
+        df_passed = pd.read_csv(rf"{get_path()}\Report\Passed_{time_responser('date')}.csv")
         df_passed.to_excel(self.filename, index=True, sheet_name="Passed")
 
         # Carica il secondo dataframe su un secondo sheet
-        df_defect = pd.read_csv(r"D:\Users\Principale\Desktop\Report_Maker_v0.1\Defects_26-01-2025.csv")
+        df_defect = pd.read_csv(rf"{get_path()}\Report\Defects_{time_responser('date')}.csv")
         with pd.ExcelWriter(self.filename, engine="openpyxl", mode="a") as writer:
             df_defect.to_excel(writer, index=True,sheet_name="Defects")
         
@@ -89,9 +88,11 @@ class Report:
             worksheet.column_dimensions[column].width = adjusted_width
 
 # Crea la directory secondo mie specifiche: una cartella giornaliera e una sottocartella a testa per Passed, Defects, e Report.
+# Piccolo problema: la classe funziona e create_subdir riesce a rintracciare il worktree, ma solo finché la dashboard rimane aperta.
+#       Nelle tue intenzioni, la dashboard dovrebbe ricordare il path anche quando si chiude. Step per 2.0?
 class WorkTree:
-    def __init__(self,path):
-        self.path = path
+    def __init__(self):
+        self.path = get_path()
         self.dirname = time_responser('date')
         self.subdirs = ("Passed","Defects", "Report")
 
