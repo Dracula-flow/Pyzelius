@@ -23,16 +23,19 @@ class CSV_File:
         return headers
     
     def create_row(path):
-        data = [f for f in os.listdir(path) if os.path.isfile(os.path.join(path, f))]
+        # for file in os.listdir(path):
+        #     if file.endswith(".mp4"):
+        # POtrebbe funzionare?
+        data = [f for f in os.listdir(path) if (os.path.join(path, f)) and f.endswith('.mp4')]
         rows = []
 
         for file in data:
-            # Toglie il format al nome del file
-            formatted_entry, _ =os.path.splitext(file)
-            # Divide ogni nome di file in un singolo array
-            entry = formatted_entry.split("-")
-            # Mette i diversi array nell'array principale
-            rows.append(entry)
+                # Toglie il format al nome del file
+                formatted_entry, _ =os.path.splitext(file)
+                # Divide ogni nome di file in un singolo array
+                entry = formatted_entry.split("-")
+                # Mette i diversi array nell'array principale
+                rows.append(entry)
 
         return rows
 
@@ -46,15 +49,18 @@ class CSV_File:
 # Genera i dataframe dai CVS e li mette in un excel, formattato secondo le esigenze
 class Report:
     def __init__(self):
-        self.filename = f"Report_{time_responser('date')}.xlsx"
+        self.date_str = time_responser('date')
+        self.path = get_path()
+        self.filename = rf"{self.path}/{self.date_str}/Report_{self.date_str}.xlsx"
 
     def data_feed(self):
         # Crea un file excel e carica il dataframe sul primo excel sheet
-        df_passed = pd.read_csv(rf"{get_path()}\Report\Passed_{time_responser('date')}.csv")
+        # It seems like pd.read_csv doesn't like utf-8. latin-1 encoding should solve the problem.
+        df_passed = pd.read_csv(rf"C:/Users/Simone Avagliano/Desktop/Pyzelius-main/Passed_{self.date_str}.csv", encoding='latin-1')
         df_passed.to_excel(self.filename, index=True, sheet_name="Passed")
 
         # Carica il secondo dataframe su un secondo sheet
-        df_defect = pd.read_csv(rf"{get_path()}\Report\Defects_{time_responser('date')}.csv")
+        df_defect = pd.read_csv(rf"C:/Users/Simone Avagliano/Desktop/Pyzelius-main/Defects_{self.date_str}.csv", encoding='latin-1')
         with pd.ExcelWriter(self.filename, engine="openpyxl", mode="a") as writer:
             df_defect.to_excel(writer, index=True,sheet_name="Defects")
         

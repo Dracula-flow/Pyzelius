@@ -26,7 +26,7 @@ class Gui(tk.Tk):
         self.entry.pack(pady=10)
 
         # Bottone per prendere l'entry e nominare una cartella per il defect
-        self.button = tk.Button(self, text="Crea cartella defect", font=("Arial", 12), command= lambda: CT.new_defect_folder(self.entry.get()))
+        self.button = tk.Button(self, text="Crea cartella defect", font=("Arial", 12), command= lambda: self.controller.new_defect_folder(self.entry.get()))
         self.button.pack(pady=10)
 
     # def new_sub_folder(self):
@@ -43,9 +43,9 @@ class Gui(tk.Tk):
         menu_bar= tk.Menu(self)
 
         file_menu = tk.Menu(menu_bar, tearoff=0)
-        file_menu.add_command(label="Cartella giornaliera", command= CT.new_daily_folder)
+        file_menu.add_command(label="Cartella giornaliera", command= self.controller.new_daily_folder)
         file_menu.add_separator()
-        file_menu.add_command(label="Report", command= CT.new_csv_files)
+        file_menu.add_command(label="Report", command= self.controller.new_report)
         
         menu_bar.add_cascade(label="Nuovo...", menu=file_menu)
 
