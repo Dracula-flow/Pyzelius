@@ -19,10 +19,12 @@ def time_responser(selector):
         if selector not in output:
             raise ValueError(f"Error: {selector} is NOT a valid parameter. Time_responser only takes 'date', 'time' and 'datetime' as parameters")
         
-# A function to ideally assemble the path to every folder the program needs
-# def get_path():
-#     root_path = filedialog.askdirectory()
-#     return root_path
+
+
+
+# PROBLEMA: se non c'è un file config in /config, il programma apre direttamente una finestra di dialogo per la scelta, senza spiegazioni.
+# Sta cosa va risolta... 
+# Risolto: si chiamava la funzione get_path una volta di troppo dal Controller. Ora va bene. Resta da fare in modo che una cartella possa essere selezionata come repo...
 
 def get_path():
     # Get the directory path using filedialog.askdirectory(), with a fallback to last used path.
@@ -37,8 +39,8 @@ def get_path():
         
 def load_last_path():
     # Load the last used directory path from a configuration file.
-    if os.path.exists(rf"C:\Users\Simone Avagliano\Desktop\Pyzelius-main\Pyzelius-main\config\config.json"):
-        with open(rf"C:\Users\Simone Avagliano\Desktop\Pyzelius-main\Pyzelius-main\config\config.json", 'r') as config_file:
+    if os.path.exists(rf"Pyzelius-main\config\config.json"):
+        with open(rf"Pyzelius-main\config\config.json", 'r') as config_file:
             config = json.load(config_file)
             return config.get("last_path", "")
     return ""  # Return an empty string if no path was saved
@@ -46,5 +48,5 @@ def load_last_path():
 def save_last_path(path):
     # Save the current directory path to the configuration file.
     config = {"last_path": path}
-    with open(rf"C:\Users\Simone Avagliano\Desktop\Pyzelius-main\Pyzelius-main\config\config.json", 'w') as config_file:
+    with open(rf"Pyzelius-main\config\config.json", 'w') as config_file:
         json.dump(config, config_file)

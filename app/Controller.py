@@ -5,7 +5,7 @@ from src.Functions import time_responser, get_path
 class Controller:
     def __init__(self,root):
         self.root = root
-        self.new_folder_path= get_path()
+        self.new_folder_path= None 
         self.date_str = time_responser('date')
 
     # @staticmethod
@@ -13,7 +13,7 @@ class Controller:
         # folder_path = r"D:\Users\Principale\Desktop\Report_Maker_v0.1"
         new_folder = WT()
         new_folder.create_worktree()
-        # self.new_folder_path = getattr(new_folder, 'path')
+        self.new_folder_path = getattr(new_folder, 'path') 
 
 
     # @staticmethod
