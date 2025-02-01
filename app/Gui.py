@@ -1,15 +1,13 @@
 # Qui creeremo la classe per la GUI usando Tkintr
 
 import tkinter as tk
-from tkinter import filedialog
-from tkinter import messagebox
 from app.Controller import Controller as CT
 
 class Gui(tk.Tk):
     def __init__(self):
         super().__init__()
         
-        self.title("Testboard v1.0")
+        self.title("Pyzelius v1.0")
         self.geometry("350x150")
 
         self.controller = CT(self)
@@ -29,14 +27,6 @@ class Gui(tk.Tk):
         self.button = tk.Button(self, text="Crea cartella defect", font=("Arial", 12), command= lambda: self.controller.new_defect_folder(self.entry.get()))
         self.button.pack(pady=10)
 
-    # def new_sub_folder(self):
-        
-    #     dir_name = rf"{new_folder_path}/Defects/{self.entry.get()}"
-    #     # path = r"D:\Users\Principale\Desktop\Report_Maker_v0.1\26-01-2025\Defects"
-
-    #     if dir_name:
-    #         CT.new_defect_folder(dir_name)
-
 
     def create_menu(self):
         
@@ -49,5 +39,12 @@ class Gui(tk.Tk):
         
         menu_bar.add_cascade(label="Nuovo...", menu=file_menu)
 
+
+        mod_menu= tk.Menu(menu_bar, tearoff=0)
+        mod_menu.add_command(label="Destinazione Cart.giorn.", command= self.controller.new_path_folder)
+
+        menu_bar.add_cascade(label="Modifica...", menu=mod_menu)
+
         self.config(menu=menu_bar)
+
 

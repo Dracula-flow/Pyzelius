@@ -1,6 +1,6 @@
 # Qui legheremo la GUI alle classi
 from src.Classes import CSV_File as csv, WorkTree as WT, Report 
-from src.Functions import time_responser, get_path
+from src.Functions import time_responser, modify_last_path
 
 class Controller:
     def __init__(self,root):
@@ -14,6 +14,9 @@ class Controller:
         new_folder = WT()
         new_folder.create_worktree()
         self.new_folder_path = getattr(new_folder, 'path') 
+
+    def new_path_folder(self):
+        self.new_folder_path = modify_last_path()
 
 
     # @staticmethod

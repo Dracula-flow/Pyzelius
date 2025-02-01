@@ -1,4 +1,4 @@
-# Funziona tutto, in teoria. UNica aggiunta, il selezionatore di path.
+
 
 from app.Gui import Gui
 
