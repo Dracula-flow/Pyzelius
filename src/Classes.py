@@ -8,9 +8,9 @@ from pathlib import Path
 # Una classe per creare i CSV file da buttare nei dataframe, partendo dai file di una cartella
 # Divisione per Defects e Passed
 class CSV_File:
-    def __init__(self, prefix):
+    def __init__(self, prefix, path):
         self.prefix = prefix
-        self.filename = f"{self.prefix}_{time_responser('date')}.csv"
+        self.filename = f"{path}/Report/{self.prefix}_{time_responser('date')}.csv"
     
     # Gli headers hanno bisogno di un argument, di solito, per convenzione credo.
     # Quando non ne hanno bisogno, li si dichiara metodi di classe con questo override, e si scrive cls nei parametri.
@@ -24,11 +24,12 @@ class CSV_File:
         headers = ["Slot", "OS", "Clone","Test","Defect ID"]
         return headers
     
-    def create_row(path):
+    def create_row(self,path):
         # for file in os.listdir(path):
         #     if file.endswith(".mp4"):
         # POtrebbe funzionare?
-        data = [f for f in os.listdir(path) if (os.path.join(path, f)) and f.endswith('.mp4')]
+        final_path = os.path.join(path,self.prefix)
+        data = [f for f in os.listdir(final_path) if (os.path.join(final_path, f)) and f.endswith('.mp4')]
         rows = []
 
         for file in data:
@@ -58,11 +59,11 @@ class Report:
     def data_feed(self):
         # Crea un file excel e carica il dataframe sul primo excel sheet
         # It seems like pd.read_csv doesn't like utf-8. latin-1 encoding should solve the problem.
-        df_passed = pd.read_csv(rf"C:/Users/Simone Avagliano/Desktop/Pyzelius-main/Passed_{self.date_str}.csv", encoding='latin-1')
+        df_passed = pd.read_csv(rf"{self.path}/Passed_{self.date_str}.csv", encoding='latin-1')
         df_passed.to_excel(self.filename, index=True, sheet_name="Passed")
 
         # Carica il secondo dataframe su un secondo sheet
-        df_defect = pd.read_csv(rf"C:/Users/Simone Avagliano/Desktop/Pyzelius-main/Defects_{self.date_str}.csv", encoding='latin-1')
+        df_defect = pd.read_csv(rf"{self.path}/Passed_{self.date_str}.csv", encoding='latin-1')
         with pd.ExcelWriter(self.filename, engine="openpyxl", mode="a") as writer:
             df_defect.to_excel(writer, index=True,sheet_name="Defects")
         
@@ -84,17 +85,28 @@ class Report:
     def adjust_column_width(self, worksheet):
         # Adatta la larghezza delle colonne in base al contenuto
         for col in worksheet.columns:
-            max_length = 0
-            column = col[0].column_letter  # Ottiene la lettera della colonna
-            for cell in col:
-                try:
-                    if len(str(cell.value)) > max_length:
-                        max_length = len(cell.value)
-                except:
-                    pass
-            adjusted_width = (max_length + 2)  # Aggiunge un po' di margine
-            worksheet.column_dimensions[column].width = adjusted_width
+            try:
+                max_length = 0
+                column = col[0].column_letter  # Ottiene la lettera della colonna
+                for cell in col:
+                        if len(str(cell.value)) > max_length:
+                            max_length = len(cell.value)
+                adjusted_width = (max_length + 2)  # Aggiunge un po' di margine
+                worksheet.column_dimensions[column].width = adjusted_width
+                # FOr some reason, it gives Type Error wheter the execution is correct or not.
+            except TypeError:
+                pass
 
+
+    def delete_csv(self,csv_1,csv_2):
+        try:
+            os.remove(csv_1)
+            os.remove(csv_2)
+        except FileNotFoundError:
+            pass
+        except Exception as e:
+            print (f"An error occured: {e}")
+            
 # Crea la directory secondo mie specifiche: una cartella giornaliera e una sottocartella a testa per Passed, Defects, e Report.
 # Piccolo problema: la classe funziona e create_subdir riesce a rintracciare il worktree, ma solo finché la dashboard rimane aperta.
 #       Nelle tue intenzioni, la dashboard dovrebbe ricordare il path anche quando si chiude. Step per 2.0?
