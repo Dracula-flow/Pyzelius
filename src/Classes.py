@@ -1,7 +1,9 @@
-import csv,os
+import csv,os,json
 import pandas as pd
 import openpyxl as op
-from src.Functions import time_responser, get_path
+from src.Functions import time_responser
+from tkinter import filedialog
+from pathlib import Path
 
 # Una classe per creare i CSV file da buttare nei dataframe, partendo dai file di una cartella
 # Divisione per Defects e Passed
@@ -48,10 +50,10 @@ class CSV_File:
 
 # Genera i dataframe dai CVS e li mette in un excel, formattato secondo le esigenze
 class Report:
-    def __init__(self):
+    def __init__(self,path):
         self.date_str = time_responser('date')
-        self.path = get_path()
-        self.filename = rf"{self.path}/{self.date_str}/Report_{self.date_str}.xlsx"
+        self.path = path
+        self.filename = rf"{self.path}/Report_{self.date_str}.xlsx"
 
     def data_feed(self):
         # Crea un file excel e carica il dataframe sul primo excel sheet
@@ -97,8 +99,8 @@ class Report:
 # Piccolo problema: la classe funziona e create_subdir riesce a rintracciare il worktree, ma solo finché la dashboard rimane aperta.
 #       Nelle tue intenzioni, la dashboard dovrebbe ricordare il path anche quando si chiude. Step per 2.0?
 class WorkTree:
-    def __init__(self):
-        self.path = get_path()
+    def __init__(self,path):
+        self.path = path
         self.dirname = time_responser('date')
         self.subdirs = ("Passed","Defects", "Report")
 
@@ -121,3 +123,43 @@ class WorkTree:
                 print(f"Directory '{new_dir}' creata con successo.")
             except FileExistsError:
                 print(f"La directory '{new_dir}' esiste già.")
+
+class Pathfinder:
+    def __init__(self):
+        self.config_last_path = Path(__file__).resolve().parent.parent / 'config/config.json'
+        self.last_path = self.load_last_path()
+
+    def load_last_path(self):
+        # Load the last used directory path from a configuration file.
+        if os.path.exists(self.config_last_path):
+            try:
+                with open(self.config_last_path, 'r') as config_file:
+                    config = json.load(config_file)
+                    return config.get("last_path", "")
+            except PermissionError:
+                print ("Permission error while trying to read the file")
+            except json.JSONDecodeError:
+                print("Error decoding the configuration file.")
+                return ""
+        return ""  # Return an empty string if no path was saved
+
+    def save_last_path(self):
+        # Save the current directory path to the configuration file.
+        config = {"last_path": self.last_path}
+        try:
+            with open(self.config_last_path, 'w') as config_file:
+                json.dump(config, config_file, indent=4)
+        except PermissionError:
+            print("Permission error while trying to write to the configuration file.")
+
+    def modify_last_path(self):
+        # Chiedi all'utente di selezionare una nuova directory
+        new_path = filedialog.askdirectory()
+
+        if new_path:  # Se l'utente ha selezionato un percorso
+            # Carica il file di configurazione esistente
+            self.last_path = new_path
+            self.save_last_path()
+
+    def get_path(self):
+        return self.last_path
