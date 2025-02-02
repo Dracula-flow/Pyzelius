@@ -1,7 +1,47 @@
 # Qui creeremo la classe per la GUI usando Tkintr
 
 import tkinter as tk
+from tkinter import Label,Entry
 from app.Controller import Controller as CT
+from src.Classes import Signature as SI
+import pyperclip
+
+class SignaturePanel(tk.Frame):
+    def __init__(self, master=None, logic= None):
+        super().__init__(master)
+        self.master = master
+        self.logic = logic or SI() # Usa la logica passata o la default
+        self.input_fields = self.logic.input_fields
+        self.entry_list = []
+        self.create_widgets()
+
+    def create_widgets(self):
+        for field in self.input_fields:
+            label = Label(self, text=field)
+            label.pack()
+            entry = Entry(self)
+            entry.pack()
+            self.entry_list.append(entry)
+
+        self.copy_button = tk.Button(self, text="Copia firma", command=self.on_copy)
+        self.copy_button.pack()
+
+        self.label_confirm = tk.Label(self, text="")
+        self.label_confirm.pack()
+
+    
+    def on_copy(self):
+        # Estrai i dati dai campi di input
+        entry_values = [entry.get() for entry in self.entry_list]
+        
+        # Usa la logica per combinare i dati
+        result = self.logic.entry_combine(entry_values)
+
+        pyperclip.copy(result)
+
+        self.label_confirm.config(text="Firma copiata!")
+
+
 
 class Gui(tk.Tk):
     def __init__(self):
@@ -11,22 +51,8 @@ class Gui(tk.Tk):
         self.geometry("350x150")
 
         self.controller = CT(self)
-        self.create_widgets()
         self.create_menu()
-
-    def create_widgets(self):
-        # Label
-        self.label = tk.Label(self, text="Defect Title", font=("Arial", 13))
-        self.label.pack(pady=20)
-
-        # Casella di testo
-        self.entry = tk.Entry(self, font=("Arial", 12))
-        self.entry.pack(pady=10)
-
-        # Bottone per prendere l'entry e nominare una cartella per il defect
-        self.button = tk.Button(self, text="Crea cartella defect", font=("Arial", 12), command= lambda: self.controller.new_defect_folder(self.entry.get()))
-        self.button.pack(pady=10)
-
+        self.create_widgets()
 
     def create_menu(self):
         
@@ -47,4 +73,6 @@ class Gui(tk.Tk):
 
         self.config(menu=menu_bar)
 
-
+    def create_widgets(self):
+        sign_panel= SignaturePanel(master=self)
+        sign_panel.pack(padx=10, pady=10)

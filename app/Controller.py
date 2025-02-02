@@ -1,37 +1,34 @@
-# Qui legheremo la GUI alle classi
 import os
-from src.Classes import CSV_File as csv, WorkTree as WT, Report, Pathfinder as PF 
+from src.Classes import CSV_File as csv, WorkTree as WT, Report, Pathfinder as PF, Signature as SI
 from src.Functions import time_responser
 
+# This class handles the business logic between the Classes in src and the GUI in app.
 class Controller:
     def __init__(self,root):
+
         self.root = root
         self.pathfinder = PF()
         self.new_folder_path= self.pathfinder.get_path() 
         self.date_str = time_responser('date')
 
-    # @staticmethod
     def new_daily_folder(self):
-        # folder_path = r"D:\Users\Principale\Desktop\Report_Maker_v0.1"
 
         new_folder = WT(self.new_folder_path)
         new_folder.create_worktree()
 
     def new_path_folder(self):
+
         self.new_folder_path = self.pathfinder.modify_last_path()
 
-
-    # @staticmethod
     def new_defect_folder(self,entry):
 
         if self.new_folder_path is not None:
+            
             dir_name = rf"{self.new_folder_path}/{self.date_str}/Defects/{entry}"
             WT.create_subdir(self.new_folder_path,dir_name)
         else:
             print("Error")
 
-    
-    # @staticmethod
     def new_report(self):
         
         daily_folder = os.path.join(self.new_folder_path,self.date_str)
