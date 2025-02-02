@@ -2,8 +2,10 @@ import csv,os,json
 import pandas as pd
 import openpyxl as op
 from src.Functions import time_responser
-from tkinter import filedialog
+from tkinter import filedialog,messagebox,Label,Entry
+import tkinter as tk
 from pathlib import Path
+
 
 # Una classe per creare i CSV file da buttare nei dataframe, partendo dai file di una cartella
 # Divisione per Defects e Passed
@@ -63,7 +65,7 @@ class Report:
         df_passed.to_excel(self.filename, index=True, sheet_name="Passed")
 
         # Carica il secondo dataframe su un secondo sheet
-        df_defect = pd.read_csv(rf"{self.path}/Passed_{self.date_str}.csv", encoding='latin-1')
+        df_defect = pd.read_csv(rf"{self.path}/Defects_{self.date_str}.csv", encoding='latin-1')
         with pd.ExcelWriter(self.filename, engine="openpyxl", mode="a") as writer:
             df_defect.to_excel(writer, index=True,sheet_name="Defects")
         
@@ -82,18 +84,19 @@ class Report:
         # Salva il file Excel con le modifiche
         wb.save(self.filename)
 
+    # Adapts the width of the columns based on the content.
     def adjust_column_width(self, worksheet):
-        # Adatta la larghezza delle colonne in base al contenuto
         for col in worksheet.columns:
             try:
                 max_length = 0
-                column = col[0].column_letter  # Ottiene la lettera della colonna
+                column = col[0].column_letter 
                 for cell in col:
-                        if len(str(cell.value)) > max_length:
-                            max_length = len(cell.value)
-                adjusted_width = (max_length + 2)  # Aggiunge un po' di margine
+                        if len(cell.value) > max_length:
+                            max_length = max(max_length,len(cell.value))
+                adjusted_width = (max_length + 2) 
                 worksheet.column_dimensions[column].width = adjusted_width
-                # FOr some reason, it gives Type Error wheter the execution is correct or not.
+                # It's gonna raise a TypeError exception anytime there's an empty field in the CSV
+                # That's gonna happen sometimes, so it's pass.
             except TypeError:
                 pass
 
@@ -105,11 +108,10 @@ class Report:
         except FileNotFoundError:
             pass
         except Exception as e:
-            print (f"An error occured: {e}")
+            messagebox.showerror(title="ERROR!", message=f"An error has occured: {e}")
             
-# Crea la directory secondo mie specifiche: una cartella giornaliera e una sottocartella a testa per Passed, Defects, e Report.
-# Piccolo problema: la classe funziona e create_subdir riesce a rintracciare il worktree, ma solo finché la dashboard rimane aperta.
-#       Nelle tue intenzioni, la dashboard dovrebbe ricordare il path anche quando si chiude. Step per 2.0?
+# The WorkTree creates a daily folder with three subfolders named Passed, Defects, and Report.
+# Passed and Defects are self-explanatory, Report contains the titular report to be created at the end of the workday.
 class WorkTree:
     def __init__(self,path):
         self.path = path
@@ -118,24 +120,27 @@ class WorkTree:
 
     def create_worktree(self):
         root_path = os.path.join(self.path,self.dirname)
-        os.mkdir(root_path)
+        try:
+            os.mkdir(root_path)
+            messagebox.showinfo(title="Success!", message=f"Folder {self.dirname} created!")
+        except FileExistsError:
+            messagebox.showerror(title="Error!",message=f"The folder {self.dirname} already exists!")
 
         for subdir in self.subdirs:
             subdir_path = os.path.join(root_path,subdir)
             os.mkdir(subdir_path)
 
+    # This method creates the singular defect subdir to house both video and debug logs.
     @staticmethod
     def create_subdir(path,dir_name):
         new_dir = os.path.join(path, dir_name)
-        
-        # Controlla se la directory esiste già
-        if not os.path.exists(new_dir):
-            try:
-                os.mkdir(new_dir)
-                print(f"Directory '{new_dir}' creata con successo.")
-            except FileExistsError:
-                print(f"La directory '{new_dir}' esiste già.")
+        try:
+            os.mkdir(new_dir)
+            messagebox.showinfo(title="Success!", message=f"Defect folder {dir_name} opened!")
+        except FileExistsError:
+            messagebox.showerror(title="Error!", message=f"Defect folder {dir_name} already opened!")
 
+# A class to get the correct path for the rest of the program
 class Pathfinder:
     def __init__(self):
         self.config_last_path = Path(__file__).resolve().parent.parent / 'config/config.json'
@@ -162,10 +167,11 @@ class Pathfinder:
             with open(self.config_last_path, 'w') as config_file:
                 json.dump(config, config_file, indent=4)
         except PermissionError:
-            print("Permission error while trying to write to the configuration file.")
+            messagebox.showerror(title="Error!", message="Permission error in attempt to write to the configuration file.")
 
     def modify_last_path(self):
         # Chiedi all'utente di selezionare una nuova directory
+        
         new_path = filedialog.askdirectory()
 
         if new_path:  # Se l'utente ha selezionato un percorso
@@ -175,3 +181,32 @@ class Pathfinder:
 
     def get_path(self):
         return self.last_path
+    
+class Signature():
+    def __init__(self):
+        self.input_fields = ("Sigla", 
+                "ID",
+                "APP",
+                "BUILD", 
+                "DEVICE",
+                "OS",
+                "Puntamento")
+        self.combine=[]
+
+    def entry_combine(self, entry_list):
+        self.combine.clear()
+        for entry,key in zip(entry_list,self.input_fields):
+            try:
+                # input_value= entry.get()
+                self.combine.append(f"{key} {entry}")
+            except TypeError:
+                messagebox.showerror (f"Error: Invalid Input - {key}")
+
+        self.combine.append(f"{'DATA E ORA'} {time_responser('datetime')}")
+        self.result = "\n".join(self.combine)
+        return self.result
+    
+
+
+
+
