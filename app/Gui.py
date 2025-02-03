@@ -16,18 +16,27 @@ class SignaturePanel(tk.Frame):
         self.create_widgets()
 
     def create_widgets(self):
-        for field in self.input_fields:
+        # for field in self.input_fields:
+        #     label = Label(self, text=field)
+        #     label.pack()
+        #     entry = Entry(self)
+        #     entry.pack()
+        #     self.entry_list.append(entry)
+
+        for index, field in enumerate(self.input_fields):
             label = Label(self, text=field)
-            label.pack()
+            label.grid(row=index, column=0, sticky="e")  # Align label to the right (east)
+
             entry = Entry(self)
-            entry.pack()
+            entry.grid(row=index, column=1, padx=5)  # Add some padding if needed
+
             self.entry_list.append(entry)
 
         self.copy_button = tk.Button(self, text="Copia firma", command=self.on_copy)
-        self.copy_button.pack()
+        self.copy_button.grid(row=9, column=1, pady=2)
 
         self.label_confirm = tk.Label(self, text="")
-        self.label_confirm.pack()
+        self.label_confirm.grid(row=10, column=1, pady=2)
 
     
     def on_copy(self):
@@ -47,8 +56,8 @@ class Gui(tk.Tk):
     def __init__(self):
         super().__init__()
         
-        self.title("Pyzelius v1.0")
-        self.geometry("350x150")
+        self.title("Pyzelius v1.5")
+        self.geometry("350x350")
 
         self.controller = CT(self)
         self.create_menu()
