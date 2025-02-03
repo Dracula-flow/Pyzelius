@@ -1,9 +1,8 @@
 import csv,os,json
 import pandas as pd
 import openpyxl as op
-from src.Functions import time_responser
-from tkinter import filedialog,messagebox,Label,Entry
-import tkinter as tk
+from src.Functions import time_responser # restart
+from tkinter import filedialog,messagebox
 from pathlib import Path
 
 
@@ -178,6 +177,8 @@ class Pathfinder:
             # Carica il file di configurazione esistente
             self.last_path = new_path
             self.save_last_path()
+            # restart()
+
 
     def get_path(self):
         return self.last_path

@@ -1,5 +1,6 @@
 from datetime import datetime as dt
 import pyperclip
+import os, sys
 
 # A function to return different time components in the form of a formatted string, based on the input parameter
 def time_responser(selector):
@@ -19,24 +20,32 @@ def time_responser(selector):
             raise ValueError(f"Error: {selector} is NOT a valid parameter. Time_responser only takes 'date', 'time' and 'datetime' as parameters")
 
 # Funzione per copiare le stringhe sulla clipboard
-def copia_su_clipboard(entry_vars,input_fields):
+# def copia_su_clipboard(entry_vars,input_fields):
 
-    combine=[]
+#     combine=[]
     
-    for entry,key in zip(entry_vars,input_fields):
-        try:
-            input_value= entry.get()
-            combine.append(f"{key} {input_value}")
-        except TypeError:
-            print (f"Errore: {key}")
+#     for entry,key in zip(entry_vars,input_fields):
+#         try:
+#             input_value= entry.get()
+#             combine.append(f"{key} {input_value}")
+#         except TypeError:
+#             print (f"Errore: {key}")
 
-    combine.append(f"{'DATA E ORA'} {time_responser('datetime')}")
+#     combine.append(f"{'DATA E ORA'} {time_responser('datetime')}")
 
-    # Uniamo le stringhe con un salto di linea
-    testo_da_copiare = "\n".join(combine)
+#     # Uniamo le stringhe con un salto di linea
+#     testo_da_copiare = "\n".join(combine)
 
-    # Copiamo sulla clipboard
-    pyperclip.copy(testo_da_copiare)
+#     # Copiamo sulla clipboard
+#     pyperclip.copy(testo_da_copiare)
 
-    # Mostriamo un messaggio di conferma
+#     # Mostriamo un messaggio di conferma
+# def restart():
+#     # Get the path to the Python executable
+#     python_executable = sys.executable
     
+#     # Get the path to the current script (sys.argv[0] should be the script path)
+#     script_path = sys.argv[0]
+    
+#     # Restart the script with the same arguments
+#     os.execl(python_executable, python_executable, script_path, *sys.argv[1:])
