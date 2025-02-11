@@ -1,4 +1,4 @@
-
+# Simple launcher for the app
 
 from app.Gui import Gui
 

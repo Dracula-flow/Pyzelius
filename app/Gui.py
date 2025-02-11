@@ -16,12 +16,6 @@ class SignaturePanel(tk.Frame):
         self.create_widgets()
 
     def create_widgets(self):
-        # for field in self.input_fields:
-        #     label = Label(self, text=field)
-        #     label.pack()
-        #     entry = Entry(self)
-        #     entry.pack()
-        #     self.entry_list.append(entry)
 
         for index, field in enumerate(self.input_fields):
             label = Label(self, text=field)
@@ -71,12 +65,16 @@ class Gui(tk.Tk):
         file_menu.add_command(label="Cartella giornaliera", command= self.controller.new_daily_folder)
         file_menu.add_separator()
         file_menu.add_command(label="Report", command= self.controller.new_report)
+        file_menu.add_separator()
+        file_menu.add_command(label="Cartella Sanity", command= self.controller.new_sanity_folder)
         
         menu_bar.add_cascade(label="Nuovo...", menu=file_menu)
 
 
         mod_menu= tk.Menu(menu_bar, tearoff=0)
         mod_menu.add_command(label="Destinazione Cart.giorn.", command= self.controller.new_path_folder)
+        file_menu.add_separator()
+        mod_menu.add_command(label="Smista screen sanity", command=self.controller.new_sanity_doc)
 
         menu_bar.add_cascade(label="Modifica...", menu=mod_menu)
 

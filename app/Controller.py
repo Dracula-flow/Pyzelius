@@ -1,5 +1,7 @@
 import os
-from src.Classes import CSV_File as csv, WorkTree as WT, Report, Pathfinder as PF, Signature as SI
+import pandas as pd
+from tkinter import filedialog
+from src.Classes import CSV_File as csv, WorkTree as WT, Report, Pathfinder as PF, Master
 from src.Functions import time_responser
 
 # This class handles the business logic between the Classes in src and the GUI in app.
@@ -46,3 +48,7 @@ class Controller:
         today_report = Report(rf"{daily_folder}/Report")
         today_report.data_feed()
         today_report.delete_csv(Passed_file.filename,Defect_file.filename)
+
+    def new_sanity_folder(self):
+        new_folder = Master(self.new_folder_path)
+        new_folder.new_sanity_dir()
