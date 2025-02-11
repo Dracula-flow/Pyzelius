@@ -3,15 +3,13 @@
 import tkinter as tk
 from tkinter import Label,Entry
 from app.Controller import Controller as CT
-from src.Classes import Signature as SI
-import pyperclip
 
 class SignaturePanel(tk.Frame):
-    def __init__(self, master=None, logic= None):
+    def __init__(self, master=None):
         super().__init__(master)
         self.master = master
-        self.logic = logic or SI() # Usa la logica passata o la default
-        self.input_fields = self.logic.input_fields
+        self.controller = CT(self)
+        self.input_fields = self.controller.signature.input_fields
         self.entry_list = []
         self.create_widgets()
 
@@ -26,23 +24,11 @@ class SignaturePanel(tk.Frame):
 
             self.entry_list.append(entry)
 
-        self.copy_button = tk.Button(self, text="Copia firma", command=self.on_copy)
+        self.copy_button = tk.Button(self, text="Copia firma", command= lambda: self.controller.on_copy(self.entry_list))
         self.copy_button.grid(row=9, column=1, pady=2)
 
         self.label_confirm = tk.Label(self, text="")
         self.label_confirm.grid(row=10, column=1, pady=2)
-
-    
-    def on_copy(self):
-        # Estrai i dati dai campi di input
-        entry_values = [entry.get() for entry in self.entry_list]
-        
-        # Usa la logica per combinare i dati
-        result = self.logic.entry_combine(entry_values)
-
-        pyperclip.copy(result)
-
-        self.label_confirm.config(text="Firma copiata!")
 
 
 
@@ -73,8 +59,8 @@ class Gui(tk.Tk):
 
         mod_menu= tk.Menu(menu_bar, tearoff=0)
         mod_menu.add_command(label="Destinazione Cart.giorn.", command= self.controller.new_path_folder)
-        file_menu.add_separator()
-        mod_menu.add_command(label="Smista screen sanity", command=self.controller.new_sanity_doc)
+        # file_menu.add_separator()
+        # mod_menu.add_command(label="Smista screen sanity", command=self.controller.new_sanity_doc)
 
         menu_bar.add_cascade(label="Modifica...", menu=mod_menu)
 
