@@ -1,13 +1,9 @@
-import csv,os,json,glob
+import csv,os,json
 from pathlib import Path
-from io import BytesIO
 
 import pandas as pd
 import openpyxl as op
 from docx import Document
-from docx.shared import Inches
-from PIL import Image
-
 from tkinter import filedialog,messagebox
 
 from src.Functions import time_responser # restart
@@ -225,10 +221,7 @@ class Signature():
 # -----------------------------------------------------------------------------------------------------------------------------------------
 
 # Una classe per creare le cartelle dei sanity test. Dovrebbe leggere il file della divisione e creare cartelle con
-# nome test. Ogni cartella ha un subfolder chiamato Screenshots e un file word chiamato Master, in cui dovrebbero venire incollati gli 
-# screenshot.
-
-# LAVORI IN CORSO
+# nome test.
 class Master:
     def __init__(self, path):
 

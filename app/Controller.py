@@ -1,7 +1,5 @@
-import os
-import pandas as pd
-from tkinter import filedialog
-from src.Classes import CSV_File as csv, WorkTree as WT, Report, Pathfinder as PF, Master
+import os, pyperclip
+from src.Classes import CSV_File as csv, WorkTree as WT, Report, Pathfinder as PF, Master, Signature as SI
 from src.Functions import time_responser
 
 # This class handles the business logic between the Classes in src and the GUI in app.
@@ -10,6 +8,7 @@ class Controller:
 
         self.root = root
         self.pathfinder = PF()
+        self.signature = SI()
         self.new_folder_path= self.pathfinder.get_path() 
         self.date_str = time_responser('date')
 
@@ -52,3 +51,11 @@ class Controller:
     def new_sanity_folder(self):
         new_folder = Master(self.new_folder_path)
         new_folder.new_sanity_dir()
+
+ 
+    def on_copy(self,list):
+
+        entry_values = [entry.get() for entry in list]
+        result = self.signature.entry_combine(entry_values)
+
+        pyperclip.copy(result)
