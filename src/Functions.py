@@ -1,6 +1,4 @@
 from datetime import datetime as dt
-import pyperclip
-import os, sys
 
 # A function to return different time components in the form of a formatted string, based on the input parameter
 def time_responser(selector):

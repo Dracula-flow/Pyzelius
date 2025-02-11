@@ -1,9 +1,17 @@
-import csv,os,json
+import csv,os,json,glob
+from pathlib import Path
+from io import BytesIO
+
 import pandas as pd
 import openpyxl as op
-from src.Functions import time_responser # restart
+from docx import Document
+from docx.shared import Inches
+from PIL import Image
+
 from tkinter import filedialog,messagebox
-from pathlib import Path
+
+from src.Functions import time_responser # restart
+
 
 
 # Una classe per creare i CSV file da buttare nei dataframe, partendo dai file di una cartella
@@ -50,6 +58,7 @@ class CSV_File:
             writer.writerow(headers)
             writer.writerows(rows)
 
+# ---------------------------------------------------------------------------------------------------------------
 # Genera i dataframe dai CVS e li mette in un excel, formattato secondo le esigenze
 class Report:
     def __init__(self,path):
@@ -60,28 +69,31 @@ class Report:
     def data_feed(self):
         # Crea un file excel e carica il dataframe sul primo excel sheet
         # It seems like pd.read_csv doesn't like utf-8. latin-1 encoding should solve the problem.
-        df_passed = pd.read_csv(rf"{self.path}/Passed_{self.date_str}.csv", encoding='latin-1')
-        df_passed.to_excel(self.filename, index=True, sheet_name="Passed")
+        try:
+            df_passed = pd.read_csv(rf"{self.path}/Passed_{self.date_str}.csv", encoding='latin-1')
+            df_passed.to_excel(self.filename, index=True, sheet_name="Passed")
 
-        # Carica il secondo dataframe su un secondo sheet
-        df_defect = pd.read_csv(rf"{self.path}/Defects_{self.date_str}.csv", encoding='latin-1')
-        with pd.ExcelWriter(self.filename, engine="openpyxl", mode="a") as writer:
-            df_defect.to_excel(writer, index=True,sheet_name="Defects")
-        
-        # Carica il file excel su openpyxl
-        wb = op.load_workbook(self.filename)
+            # Carica il secondo dataframe su un secondo sheet
+            df_defect = pd.read_csv(rf"{self.path}/Defects_{self.date_str}.csv", encoding='latin-1')
+            with pd.ExcelWriter(self.filename, engine="openpyxl", mode="a") as writer:
+                df_defect.to_excel(writer, index=True,sheet_name="Defects")
+            
+            # Carica il file excel su openpyxl
+            wb = op.load_workbook(self.filename)
 
-        ws1= wb["Passed"]
-        ws2= wb["Defects"]
+            ws1= wb["Passed"]
+            ws2= wb["Defects"]
 
-        # Adatta la larghezza delle colonne per il primo foglio
-        self.adjust_column_width(ws1)
-        
-        # Adatta la larghezza delle colonne per il secondo foglio
-        self.adjust_column_width(ws2)
-        
-        # Salva il file Excel con le modifiche
-        wb.save(self.filename)
+            # Adatta la larghezza delle colonne per il primo foglio
+            self.adjust_column_width(ws1)
+            
+            # Adatta la larghezza delle colonne per il secondo foglio
+            self.adjust_column_width(ws2)
+            
+            # Salva il file Excel con le modifiche
+            wb.save(self.filename)
+        except pd.errors.ParserError:
+            messagebox.showerror(title="Error!", message="A file does not respect the format!")
 
     # Adapts the width of the columns based on the content.
     def adjust_column_width(self, worksheet):
@@ -99,7 +111,7 @@ class Report:
             except TypeError:
                 pass
 
-
+# Deleting the CSVs after report generation
     def delete_csv(self,csv_1,csv_2):
         try:
             os.remove(csv_1)
@@ -109,6 +121,7 @@ class Report:
         except Exception as e:
             messagebox.showerror(title="ERROR!", message=f"An error has occured: {e}")
             
+# ------------------------------------------------------------------------------------------------------------------------
 # The WorkTree creates a daily folder with three subfolders named Passed, Defects, and Report.
 # Passed and Defects are self-explanatory, Report contains the titular report to be created at the end of the workday.
 class WorkTree:
@@ -139,6 +152,7 @@ class WorkTree:
         except FileExistsError:
             messagebox.showerror(title="Error!", message=f"Defect folder {dir_name} already opened!")
 
+# -------------------------------------------------------------------------------------------------------------------
 # A class to get the correct path for the rest of the program
 class Pathfinder:
     def __init__(self):
@@ -179,10 +193,11 @@ class Pathfinder:
             self.save_last_path()
             # restart()
 
-
     def get_path(self):
         return self.last_path
     
+# --------------------------------------------------------------------------------------------------------------------
+# A class to generate a signature to put on the tests. It is gonna be mounted on a frame in Tkinter
 class Signature():
     def __init__(self):
         self.input_fields = ("Sigla", 
@@ -207,6 +222,36 @@ class Signature():
         self.result = "\n".join(self.combine)
         return self.result
     
+# -----------------------------------------------------------------------------------------------------------------------------------------
+
+# Una classe per creare le cartelle dei sanity test. Dovrebbe leggere il file della divisione e creare cartelle con
+# nome test. Ogni cartella ha un subfolder chiamato Screenshots e un file word chiamato Master, in cui dovrebbero venire incollati gli 
+# screenshot.
+
+# LAVORI IN CORSO
+class Master:
+    def __init__(self, path):
+
+        self.path = path
+        self.screen_path= None
+        self.df = None
+        self.doc_path= None
+
+    def new_sanity_dir(self):
+        
+        path_to_excel = filedialog.askopenfilename()
+        
+        self.df = pd.read_excel(path_to_excel)
+        
+        for rows in self.df["Titolo"]:
+            self.screen_path = os.path.join(self.path, f"Sanity/{rows}/Screenshots")
+            os.makedirs(self.screen_path)
+            self.doc_path = os.path.join(self.path, f"Sanity/{rows}/Master.docx")
+            document = Document()
+            document.add_heading(rows, 2)
+            document.add_paragraph('BT=')
+            document.save(self.doc_path)
+        
 
 
 
