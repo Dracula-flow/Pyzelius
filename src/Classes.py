@@ -218,6 +218,15 @@ class Signature():
         self.result = "\n".join(self.combine)
         return self.result
     
+class SignatureSanity(Signature):
+    def __init__(self):
+        super().__init__()
+        self.input_fields = ("Sigla", "ID", "CLONE", "BROWSER")  # Subclass with fewer fields
+
+class SignatureMinimal(Signature):
+    def __init__(self):
+        super().__init__()
+        self.input_fields = ("Sigla",)  # The comma is necessary, otherwise the entry_combine will interpret this as a string to split
 # -----------------------------------------------------------------------------------------------------------------------------------------
 
 # Una classe per creare le cartelle dei sanity test. Dovrebbe leggere il file della divisione e creare cartelle con
