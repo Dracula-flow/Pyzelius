@@ -1,4 +1,4 @@
-import csv,os,json
+import csv,os,json,sys
 from pathlib import Path
 
 import pandas as pd
@@ -88,6 +88,7 @@ class Report:
             
             # Salva il file Excel con le modifiche
             wb.save(self.filename)
+            messagebox.showinfo(title="Report creato!", message=f"Il report {self.date_str} è stato creato con successo!")
         except pd.errors.ParserError:
             messagebox.showerror(title="Error!", message="A file does not respect the format!")
 
@@ -152,9 +153,21 @@ class WorkTree:
 # A class to get the correct path for the rest of the program
 class Pathfinder:
     def __init__(self):
-        self.config_last_path = Path(__file__).resolve().parent.parent / 'config/config.json'
+        self.config_last_path = self.get_config_path()
         self.last_path = self.load_last_path()
 
+    def get_config_path(self):
+        """Return the path to the configuration file, ensuring it's writable."""
+        if hasattr(sys, '_MEIPASS'):
+            # If running as a bundled executable, save it to the user's home directory or app-specific folder
+            config_folder = os.path.join(os.path.expanduser('~'), 'pyzelius_config')
+            if not os.path.exists(config_folder):
+                os.makedirs(config_folder)
+            return os.path.join(config_folder, 'config.json')
+        else:
+            # If running as a Python script, use the relative path
+            return Path(__file__).resolve().parent.parent / 'config/config.json'
+        
     def load_last_path(self):
         # Load the last used directory path from a configuration file.
         if os.path.exists(self.config_last_path):
