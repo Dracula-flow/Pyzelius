@@ -34,16 +34,16 @@ class CSV_File:
         #     if file.endswith(".mp4"):
         # POtrebbe funzionare?
         final_path = os.path.join(path,self.prefix)
-        data = [f for f in os.listdir(final_path) if (os.path.join(final_path, f)) and f.endswith('.mp4')]
+        data = [f for f in os.listdir(final_path) if (os.path.join(final_path, f)) and f.endswith('.mp4') or f.endswith('.MP4')]
         rows = []
 
         for file in data:
-                # Toglie il format al nome del file
-                formatted_entry, _ =os.path.splitext(file)
-                # Divide ogni nome di file in un singolo array
-                entry = formatted_entry.split("-")
-                # Mette i diversi array nell'array principale
-                rows.append(entry)
+            # Toglie il format al nome del file
+            formatted_entry, _ =os.path.splitext(file)
+            # Divide ogni nome di file in un singolo array
+            entry = formatted_entry.split("-")
+            # Mette i diversi array nell'array principale
+            rows.append(entry)
 
         return rows
 
@@ -266,6 +266,8 @@ class Master:
             document.add_heading(rows, 2)
             document.add_paragraph('BT=')
             document.save(self.doc_path)
+        
+        messagebox.showinfo(title="Success!", message="Sanity directory created!")
         
 
 

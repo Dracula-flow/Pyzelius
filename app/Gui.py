@@ -1,7 +1,6 @@
 # Qui creeremo la classe per la GUI usando Tkintr
 
 import tkinter as tk
-from tkinter import Label,Entry
 from tkinter import ttk
 from app.Controller import Controller as CT
 from src.Classes import Signature, SignatureSanity, SignatureMinimal
@@ -26,6 +25,7 @@ class SignaturePanel(tk.Frame):
                 ("Simple", signature_minimal)
                 ]
 
+        self.entry_list_dict = {}
 
         for tab_name, signature_class in tabs:
             tab = ttk.Frame(tabControl)
@@ -39,42 +39,11 @@ class SignaturePanel(tk.Frame):
                 entry.grid(row=i, column=1, padx=10, pady=5)
                 entry_list.append(entry)
 
-                button = ttk.Button(tab, text="Copia firma", command=lambda entry_list=entry_list: self.controller.on_copy(entry_list))
-                button.grid(row=len(signature_class.input_fields), column=0, columnspan=2, pady=20)
+            button = ttk.Button(tab, text="Copia firma", command=lambda entry_list=entry_list: self.controller.on_copy(entry_list))
+            button.grid(row=len(signature_class.input_fields), column=0, columnspan=2, pady=20)
+
             
         tabControl.pack(expand = 1, fill ="both") 
-"""Buona notizia: Le tab funzionano e sono implementate in maniera graficamente corretta.
-Brutta notizia: la funzione on_copy si è rotta per qualche motivo, e copia soltanto la dicitura "Sigla" più il time responder.
-RISOLTO: When in doubt, lambda, mr.Freeman."""
-
-
-# class SignaturePanel(tk.Frame):
-#     def __init__(self, master=None):
-#         super().__init__(master)
-#         self.master = master
-#         self.controller = CT(self)
-#         self.input_fields = self.controller.signature.input_fields
-#         self.entry_list = []
-#         self.create_widgets()
-
-#     def create_widgets(self):
-
-#         for index, field in enumerate(self.input_fields):
-#             label = Label(self, text=field)
-#             label.grid(row=index, column=0, sticky="e")  # Align label to the right (east)
-
-#             entry = Entry(self)
-#             entry.grid(row=index, column=1, padx=5)  # Add some padding if needed
-
-#             self.entry_list.append(entry)
-
-#         self.copy_button = tk.Button(self, text="Copia firma", command= lambda: self.controller.on_copy(self.entry_list))
-#         self.copy_button.grid(row=9, column=1, pady=3)
-
-#         self.label_confirm = tk.Label(self, text="")
-#         self.label_confirm.grid(row=10, column=1, pady=2)
-
-
 
 class Gui(tk.Tk):
     def __init__(self):

@@ -1,5 +1,5 @@
 import os, pyperclip
-from src.Classes import CSV_File as csv, WorkTree as WT, Report, Pathfinder as PF, Master, Signature as SI, SignatureMinimal as Mini, SignatureSanity as Sanity
+from src.Classes import CSV_File as csv, WorkTree as WT, Report, Pathfinder as PF, Master, Signature as SI
 from src.Functions import time_responser
 
 # This class handles the business logic between the Classes in src and the GUI in app.
@@ -8,7 +8,7 @@ class Controller:
 
         self.root = root
         self.pathfinder = PF()
-        self.signature = SI() or Sanity() or Mini()
+        self.signature = SI()
         self.new_folder_path= self.pathfinder.get_path() 
         self.date_str = time_responser('date')
 
@@ -20,15 +20,6 @@ class Controller:
     def new_path_folder(self):
 
         self.new_folder_path = self.pathfinder.modify_last_path()
-
-    def new_defect_folder(self,entry):
-
-        if self.new_folder_path is not None:
-            
-            dir_name = rf"{self.new_folder_path}/{self.date_str}/Defects/{entry}"
-            WT.create_subdir(self.new_folder_path,dir_name)
-        else:
-            print("Error")
 
     def new_report(self):
         
@@ -52,8 +43,7 @@ class Controller:
         new_folder = Master(self.new_folder_path)
         new_folder.new_sanity_dir()
 
- 
-    def on_copy(self,list):
+    def on_copy(self,list, event=None):
 
         try:
             entry_values = [entry.get() for entry in list]
