@@ -17,3 +17,6 @@ def time_responser(selector):
         if selector not in output:
             raise ValueError(f"Error: {selector} is NOT a valid parameter. Time_responser only takes 'date', 'time' and 'datetime' as parameters")
 
+# A function to check for file format
+def is_test(filename):
+    return filename.lower().endswith(('.mp4','.mov')) 

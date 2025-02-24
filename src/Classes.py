@@ -6,9 +6,7 @@ import openpyxl as op
 from docx import Document
 from tkinter import filedialog,messagebox
 
-from src.Functions import time_responser # restart
-
-
+from src.Functions import time_responser, is_test # restart
 
 # Una classe per creare i CSV file da buttare nei dataframe, partendo dai file di una cartella
 # Divisione per Defects e Passed
@@ -30,25 +28,23 @@ class CSV_File:
         return headers
     
     def create_row(self,path):
-        # for file in os.listdir(path):
-        #     if file.endswith(".mp4"):
-        # POtrebbe funzionare?
+        # Creates an array of data based on the files in the directory passed to the machine
         final_path = os.path.join(path,self.prefix)
-        data = [f for f in os.listdir(final_path) if (os.path.join(final_path, f)) and f.endswith('.mp4') or f.endswith('.MP4')]
+        data = [f for f in os.listdir(final_path) if os.path.isfile(os.path.join(final_path, f)) and is_test(f)]
         rows = []
 
         for file in data:
-            # Toglie il format al nome del file
+            # Expunges the format from the file name
             formatted_entry, _ =os.path.splitext(file)
-            # Divide ogni nome di file in un singolo array
+            
             entry = formatted_entry.split("-")
-            # Mette i diversi array nell'array principale
+            
             rows.append(entry)
 
         return rows
 
+    # Creates the CSV file 
     def create_file(self, headers, rows):
-        # Creazione del file CSV con intestazione e righe di dati
         with open(self.filename, mode='w', newline='') as file:
             writer = csv.writer(file)
             writer.writerow(headers)
@@ -131,9 +127,9 @@ class WorkTree:
         root_path = os.path.join(self.path,self.dirname)
         try:
             os.mkdir(root_path)
-            messagebox.showinfo(title="Success!", message=f"Folder {self.dirname} created!")
+            messagebox.showinfo(title="Cartella creata!", message=f"Cartella {self.dirname} creata!")
         except FileExistsError:
-            messagebox.showerror(title="Error!",message=f"The folder {self.dirname} already exists!")
+            messagebox.showerror(title="Errore!",message=f"La cartella {self.dirname} esiste già nella destinazione!")
 
         for subdir in self.subdirs:
             subdir_path = os.path.join(root_path,subdir)
@@ -267,7 +263,7 @@ class Master:
             document.add_paragraph('BT=')
             document.save(self.doc_path)
         
-        messagebox.showinfo(title="Success!", message="Sanity directory created!")
+        messagebox.showinfo(title="Cartella creata!", message="Cartella Sanity creata!")
         
 
 
