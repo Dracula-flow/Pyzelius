@@ -306,7 +306,7 @@ class Master:
             self.doc_path = os.path.join(self.path, f"Sanity/{elaborated}/Master.docx")
             document = Document()
             document.add_heading(rows, 2)
-            document.add_paragraph('BT=')
+            document.add_paragraph('ID=')
             document.save(self.doc_path)
         
         messagebox.showinfo(title="Cartella creata!", message="Cartella Sanity creata!")
