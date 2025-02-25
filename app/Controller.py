@@ -44,7 +44,7 @@ class Controller:
         new_folder = Master(self.new_folder_path)
         new_folder.new_master_dir()
 
-    def on_copy(self,list, event=None):
+    def on_copy(self,list):
 
         try:
             entry_values = [entry.get() for entry in list]

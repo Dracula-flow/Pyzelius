@@ -8,7 +8,7 @@ from docx.shared import Inches
 from PIL import Image
 from tkinter import filedialog,messagebox
 
-from src.Functions import time_responser, is_test, is_screenshot
+from src.Functions import time_responser, format_checker, truncate_path
 
 class CSV_File:
     """
@@ -33,7 +33,7 @@ class CSV_File:
         Creates an array of data based on the files in the directory passed to the method.
         """
         final_path = os.path.join(path,self.prefix)
-        data = [f for f in os.listdir(final_path) if os.path.isfile(os.path.join(final_path, f)) and is_test(f)]
+        data = [f for f in os.listdir(final_path) if os.path.isfile(os.path.join(final_path, f)) and format_checker(f, '.mp4','.mov')]
         rows = []
 
         for file in data:
@@ -56,7 +56,6 @@ class CSV_File:
             writer.writerows(rows)
 
 # ---------------------------------------------------------------------------------------------------------------
-# Genera i dataframe dai CVS e li mette in un excel, formattato secondo le esigenze
 class Report:
     """
     Creates an .xlsx file, printing two Pandas Dataframes on two different sheets. 
@@ -301,9 +300,10 @@ class Master:
         self.df = pd.read_excel(path_to_excel)
         
         for rows in self.df["Titolo"]:
-            self.screen_path = os.path.join(self.path, f"Sanity/{rows}/Screenshots")
+            elaborated = truncate_path(rows)
+            self.screen_path = os.path.join(self.path, f"Sanity/{elaborated}/Screenshots")
             os.makedirs(self.screen_path)
-            self.doc_path = os.path.join(self.path, f"Sanity/{rows}/Master.docx")
+            self.doc_path = os.path.join(self.path, f"Sanity/{elaborated}/Master.docx")
             document = Document()
             document.add_heading(rows, 2)
             document.add_paragraph('BT=')
@@ -312,7 +312,9 @@ class Master:
         messagebox.showinfo(title="Cartella creata!", message="Cartella Sanity creata!")
 
 # ------------------------------------------------------------------------------------------------------
-# Needed: Error Handling and signal to user (esp when Sanity folder is empty), cleaning the code for unused variables.
+# Needed: Error Handling, also trying to enable long paths on the folders.
+# Enabling long path on the machine is not the solution. Truncating the path is seemingly doing nothing.
+
 class DocxUpdater:
     """ 
     Copypastes images in order of creation from a 'Screenshots' folder onto a 'Master.docx' file, in a specified path.
@@ -331,7 +333,6 @@ class DocxUpdater:
         for root, dirs, files in os.walk(self.root_dir):
             if 'Screenshots' in dirs and 'Master.docx' in files:
                 screenshot_folders.append(root)
-                print("get screenshot ok")
         return screenshot_folders
 
     def get_img_files(self, screenshots_folder):
@@ -345,11 +346,10 @@ class DocxUpdater:
 
             for file in os.listdir(screenshots_path):
                 
-                if is_screenshot(file):
+                if format_checker(file, '.jpg','.png'):
                     png_path = os.path.join(screenshots_path, file)
                     creation_time = os.path.getctime(png_path)
                     png_files.append((file, creation_time))
-                    print("jpg file ok")
         
         # Sort by creation time
         png_files.sort(key=lambda x: x[1])
@@ -362,13 +362,14 @@ class DocxUpdater:
         doc = Document(docx_path)
         
         # Are width and height necessary??
+        # Is the truncation needed here?
         for png_file in png_files:
             # Open the image
             img = Image.open(png_file)
             width, height = img.size
             # Insert image into the docx file
-            doc.add_picture(png_file, width=Inches(4))
-            doc.add_paragraph(f"Inserted image: {png_file}")
+            doc.add_picture(png_file, width=Inches(5))
+            doc.add_paragraph(f"\n")
         
         doc.save(docx_path)
 
@@ -379,15 +380,22 @@ class DocxUpdater:
         folders = self.get_screenshot_folders()
         
         # Needs testing! To understand what is necessary and what not.
-        for folder in folders:
-            screenshots_folder = os.path.join(folder, 'Screenshots')
-            docx_path = os.path.join(folder, 'Master.docx')
-            
-            # Get the .png files sorted by creation time
-            png_files = self.get_img_files(folder)
-            
-            # Insert the .png files into the Example.docx file
-            self.insert_images_to_docx(docx_path, png_files)
+        try:
+            for folder in folders:
+                docx_path = os.path.join(folder, 'Master.docx')
+                # Checks rudimentally if the Master has images in it
+                if os.path.getsize(docx_path) <= 36000:
+
+                # Get the .png files sorted by creation time
+                    png_files = self.get_img_files(folder)
+                
+                # Insert the .png files into the Example.docx file
+                    self.insert_images_to_docx(docx_path, png_files)
+
+            # Message to confirm the successful operation
+            messagebox.showinfo(title="Success!", message="Smistamento riuscito! Controlla i file master!")
+        except Exception as e:
+            messagebox.showerror(title="Error", message= f"Something went wrong: {e}")
         
 
 
