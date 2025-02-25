@@ -19,13 +19,12 @@ class SignaturePanel(tk.Frame):
         signature_sanity = SignatureSanity()
         signature_minimal = SignatureMinimal()
         
-        tabs = [
+        tabs = (
                 ("Full", signature), 
                 ("Sanity", signature_sanity), 
                 ("Simple", signature_minimal)
-                ]
+                )
 
-        self.entry_list_dict = {}
 
         for tab_name, signature_class in tabs:
             tab = ttk.Frame(tabControl)
@@ -72,8 +71,8 @@ class Gui(tk.Tk):
 
         mod_menu= tk.Menu(menu_bar, tearoff=0)
         mod_menu.add_command(label="Destinazione Cart.giorn.", command= self.controller.new_path_folder)
-        # file_menu.add_separator()
-        # mod_menu.add_command(label="Smista screen sanity", command=self.controller.new_sanity_doc)
+        mod_menu.add_separator()
+        mod_menu.add_command(label="Smista screen sanity", command=self.controller.sanity_paste)
 
         menu_bar.add_cascade(label="Modifica...", menu=mod_menu)
 

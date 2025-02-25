@@ -1,5 +1,5 @@
 import os, pyperclip
-from src.Classes import CSV_File as csv, WorkTree as WT, Report, Pathfinder as PF, Master, Signature as SI
+from src.Classes import CSV_File as csv, WorkTree as WT, Report, Pathfinder as PF, Master, Signature as SI, DocxUpdater
 from src.Functions import time_responser
 
 # This class handles the business logic between the Classes in src and the GUI in app.
@@ -10,6 +10,7 @@ class Controller:
         self.pathfinder = PF()
         self.signature = SI()
         self.new_folder_path= self.pathfinder.get_path() 
+        self.updater = DocxUpdater(os.path.join(self.new_folder_path, 'Sanity'))
         self.date_str = time_responser('date')
 
     def new_daily_folder(self):
@@ -41,9 +42,9 @@ class Controller:
 
     def new_sanity_folder(self):
         new_folder = Master(self.new_folder_path)
-        new_folder.new_sanity_dir()
+        new_folder.new_master_dir()
 
-    def on_copy(self,list, event=None):
+    def on_copy(self,list):
 
         try:
             entry_values = [entry.get() for entry in list]
@@ -52,3 +53,6 @@ class Controller:
             pyperclip.copy(result)
         except AttributeError:
             pass
+
+    def sanity_paste(self):
+        self.updater.process_folders()
