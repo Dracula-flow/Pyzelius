@@ -236,7 +236,7 @@ class Signature():
     """
     def __init__(self):
         self.input_fields = ("Sigla", 
-                "ID",
+                "BT",
                 "APP",
                 "BUILD", 
                 "DEVICE",
@@ -263,7 +263,7 @@ class SignatureSanity(Signature):
     """
     def __init__(self):
         super().__init__()
-        self.input_fields = ("Sigla", "ID", "CLONE", "BROWSER")  # Subclass with fewer fields
+        self.input_fields = ("Sigla", "BT", "CLONE", "BROWSER")  # Subclass with fewer fields
 
 class SignatureMinimal(Signature):
     """
@@ -306,7 +306,7 @@ class Master:
             self.doc_path = os.path.join(self.path, f"Sanity/{elaborated}/Master.docx")
             document = Document()
             document.add_heading(rows, 2)
-            document.add_paragraph('ID=')
+            document.add_paragraph('BT=')
             document.save(self.doc_path)
         
         messagebox.showinfo(title="Cartella creata!", message="Cartella Sanity creata!")
@@ -346,6 +346,7 @@ class DocxUpdater:
 
             for file in os.listdir(screenshots_path):
                 
+                #  Can we put something here to rename the img files? This way, we may avoid the issue with long paths.
                 if format_checker(file, '.jpg','.png'):
                     png_path = os.path.join(screenshots_path, file)
                     creation_time = os.path.getctime(png_path)
@@ -379,7 +380,6 @@ class DocxUpdater:
         """
         folders = self.get_screenshot_folders()
         
-        # Needs testing! To understand what is necessary and what not.
         try:
             for folder in folders:
                 docx_path = os.path.join(folder, 'Master.docx')

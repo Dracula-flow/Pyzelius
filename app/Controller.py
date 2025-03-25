@@ -1,4 +1,5 @@
 import os, pyperclip
+import tkinter as tk
 from src.Classes import CSV_File as csv, WorkTree as WT, Report, Pathfinder as PF, Master, Signature as SI, DocxUpdater
 from src.Functions import time_responser
 
@@ -53,6 +54,14 @@ class Controller:
             pyperclip.copy(result)
         except AttributeError:
             pass
+    
+    def copy_text(self, entryField):
+        # Get the content from the Text widget
+        note_content = entryField.get("1.0", tk.END).strip()
+        
+        # Use pyperclip to copy the content to the clipboard
+        pyperclip.copy(note_content)
+
 
     def sanity_paste(self):
         self.updater.process_folders()
