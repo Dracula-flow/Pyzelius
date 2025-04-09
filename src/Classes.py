@@ -8,7 +8,7 @@ from docx.shared import Inches
 from PIL import Image
 from tkinter import filedialog,messagebox
 
-from src.Functions import time_responser, format_checker, truncate_path
+from src.Functions import time_responser, truncate_path
 
 class CSV_File:
     """
@@ -32,17 +32,10 @@ class CSV_File:
         """
         Creates an array of data based on the files in the directory passed to the method.
         """
-        final_path = os.path.join(path,self.prefix)
-        data = [f for f in os.listdir(final_path) if os.path.isfile(os.path.join(final_path, f)) and format_checker(f, '.mp4','.mov')]
-        rows = []
-
-        for file in data:
-            # Expunges the format from the file name
-            formatted_entry, _ =os.path.splitext(file)
-            
-            entry = formatted_entry.split("-")
-            
-            rows.append(entry)
+        final_path = Path(path)/self.prefix 
+        data = [f for f in final_path.iterdir() if f.is_file() and f.suffix in {'.mp4','.mov','.zip'}]
+        print(data)
+        rows = [f.stem.split("-") for f in data]
 
         return rows
 
@@ -56,6 +49,7 @@ class CSV_File:
             writer.writerows(rows)
 
 # ---------------------------------------------------------------------------------------------------------------
+
 class Report:
     """
     Creates an .xlsx file, printing two Pandas Dataframes on two different sheets. 
@@ -64,7 +58,9 @@ class Report:
     def __init__(self,path):
         self.date_str = time_responser('date')
         self.path = path
-        self.filename = rf"{self.path}/Report_{self.date_str}.xlsx"
+        self.filename = Path(self.path)/f'Report_{self.date_str}.xlsx'
+        self.passed = Path(self.path)/f'Passed_{self.date_str}.csv'
+        self.defects = Path(self.path)/f'Defects_{self.date_str}.csv'
 
     def data_feed(self):
         """
@@ -73,11 +69,11 @@ class Report:
         # pd.read_csv doesn't like utf-8. latin-1 encoding solves the problem.
         try:
             # Writes the Passed data
-            df_passed = pd.read_csv(rf"{self.path}/Passed_{self.date_str}.csv", encoding='latin-1')
+            df_passed = pd.read_csv(self.passed, dtype={'Slot':str,'OS':str,'Clone':str, 'Test':str, 'Retest':str}, encoding='latin-1')
             df_passed.to_excel(self.filename, index=True, sheet_name="Passed")
 
             # Writes the Defects data
-            df_defect = pd.read_csv(rf"{self.path}/Defects_{self.date_str}.csv", encoding='latin-1')
+            df_defect = pd.read_csv(self.defects, dtype={'Slot':str,'OS':str,'Clone':str, 'Test':str, 'Defect ID':str}, encoding='latin-1')
             with pd.ExcelWriter(self.filename, engine="openpyxl", mode="a") as writer:
                 df_defect.to_excel(writer, index=True,sheet_name="Defects")
             
@@ -122,13 +118,10 @@ class Report:
         """
         Deletes the CSV files. To be used after Report generation.
         """
-        try:
-            os.remove(csv_1)
-            os.remove(csv_2)
-        except FileNotFoundError:
-            pass
-        except Exception as e:
-            messagebox.showerror(title="ERROR!", message=f"An error has occured: {e}")
+        if Path(csv_1).is_file():
+            Path(csv_1).unlink()
+        if Path(csv_2).is_file():
+            Path(csv_2).unlink()
             
 # ------------------------------------------------------------------------------------------------------------------------
 
@@ -143,16 +136,16 @@ class WorkTree:
         self.subdirs = ("Passed","Defects", "Report")
 
     def create_worktree(self):
-        root_path = os.path.join(self.path,self.dirname)
+        root_path = Path(self.path)/self.dirname
         try:
-            os.mkdir(root_path)
+            Path.mkdir(root_path)
             messagebox.showinfo(title="Cartella creata!", message=f"Cartella {self.dirname} creata!")
         except FileExistsError:
             messagebox.showerror(title="Errore!",message=f"La cartella {self.dirname} esiste già nella destinazione!")
 
         for subdir in self.subdirs:
-            subdir_path = os.path.join(root_path,subdir)
-            os.mkdir(subdir_path)
+            subdir_path = Path(root_path)/subdir
+            Path.mkdir(subdir_path)
 
 # -------------------------------------------------------------------------------------------------------------------
 
@@ -179,10 +172,10 @@ class Pathfinder:
         """
         if hasattr(sys, '_MEIPASS'):
             # If running as a bundled executable, save it to the user's home directory or app-specific folder
-            config_folder = os.path.join(os.path.expanduser('~'), 'pyzelius_config')
-            if not os.path.exists(config_folder):
-                os.makedirs(config_folder)
-            return os.path.join(config_folder, 'config.json')
+            config_folder = Path.home()/'pyzelius_config'
+            if not Path.exists(config_folder):
+                config_folder.mkdir(parents=True, exist_ok=False)
+            return Path(config_folder)/'config.json' 
         else:
             # If running as a Python script, use the relative path
             return Path(__file__).resolve().parent.parent / 'config/config.json'
@@ -191,7 +184,7 @@ class Pathfinder:
         """
         Load the last used directory path from a configuration file.
         """
-        if os.path.exists(self.config_last_path):
+        if Path.exists(self.config_last_path):
             try:
                 with open(self.config_last_path, 'r') as config_file:
                     config = json.load(config_file)
@@ -263,7 +256,7 @@ class SignatureSanity(Signature):
     """
     def __init__(self):
         super().__init__()
-        self.input_fields = ("Sigla", "BT", "CLONE", "BROWSER")  # Subclass with fewer fields
+        self.input_fields = ("Sigla", "BT", "CLONE", "BROWSER",)  # Subclass with fewer fields
 
 class SignatureMinimal(Signature):
     """
@@ -271,7 +264,7 @@ class SignatureMinimal(Signature):
     """
     def __init__(self):
         super().__init__()
-        self.input_fields = ("Sigla",)  # The comma is necessary, otherwise the entry_combine will interpret this as a string to split
+        self.input_fields = ("Sigla",) # The comma is necessary, otherwise the entry_combine will interpret this as a string to split
 # -----------------------------------------------------------------------------------------------------------------------------------------
 
 class Master:
@@ -301,9 +294,9 @@ class Master:
         
         for rows in self.df["Titolo"]:
             elaborated = truncate_path(rows)
-            self.screen_path = os.path.join(self.path, f"Sanity/{elaborated}/Screenshots")
-            os.makedirs(self.screen_path)
-            self.doc_path = os.path.join(self.path, f"Sanity/{elaborated}/Master.docx")
+            self.screen_path = Path(self.path)/f"Sanity/{elaborated}/Screenshots"
+            self.screen_path.mkdir()
+            self.doc_path = Path(self.path)/f"Sanity/{elaborated}/Master.docx"
             document = Document()
             document.add_heading(rows, 2)
             document.add_paragraph('BT=')
@@ -323,14 +316,14 @@ class DocxUpdater:
         """
         Initializes the class with the root directory containing the folders.
         """
-        self.root_dir = root_dir
+        self.root_dir = Path(root_dir)
 
     def get_screenshot_folders(self):
         """
         Get all subfolders that contain a 'Screenshots' directory.
         """
         screenshot_folders = []
-        for root, dirs, files in os.walk(self.root_dir):
+        for root, dirs, files in self.root_dir.walk():
             if 'Screenshots' in dirs and 'Master.docx' in files:
                 screenshot_folders.append(root)
         return screenshot_folders
@@ -340,21 +333,21 @@ class DocxUpdater:
         Retrieves and sorts image files by creation time in the 'Screenshots' folder. The image files must be either .jpg or .png .
         """
         png_files = []
-        screenshots_path = os.path.join(screenshots_folder, 'Screenshots')
+        screenshots_path = Path(screenshots_folder)/'Screenshots' 
 
-        if os.path.isdir(screenshots_path):
+        if screenshots_path.is_dir():
 
-            for file in os.listdir(screenshots_path):
+            for file in screenshots_path.iterdir():
                 
                 #  Can we put something here to rename the img files? This way, we may avoid the issue with long paths.
-                if format_checker(file, '.jpg','.png'):
-                    png_path = os.path.join(screenshots_path, file)
-                    creation_time = os.path.getctime(png_path)
+                if file.suffix in {'png','.jpg'}:
+                    png_path = Path(screenshots_path)/file 
+                    creation_time = png_path.stat().st_birthtime
                     png_files.append((file, creation_time))
         
         # Sort by creation time
         png_files.sort(key=lambda x: x[1])
-        return [os.path.join(screenshots_path, file[0]) for file in png_files]
+        return [Path(screenshots_path)/ file[0] for file in png_files]
 
     def insert_images_to_docx(self, docx_path, png_files):
         """
@@ -382,7 +375,7 @@ class DocxUpdater:
         
         try:
             for folder in folders:
-                docx_path = os.path.join(folder, 'Master.docx')
+                docx_path = Path(folder)/'Master.docx' 
                 # Checks rudimentally if the Master has images in it
                 if os.path.getsize(docx_path) <= 36000:
 

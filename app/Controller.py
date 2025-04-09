@@ -1,5 +1,6 @@
-import os, pyperclip
+import pyperclip
 import tkinter as tk
+from pathlib import Path
 from src.Classes import CSV_File as csv, WorkTree as WT, Report, Pathfinder as PF, Master, Signature as SI, DocxUpdater
 from src.Functions import time_responser
 
@@ -11,7 +12,7 @@ class Controller:
         self.pathfinder = PF()
         self.signature = SI()
         self.new_folder_path= self.pathfinder.get_path() 
-        self.updater = DocxUpdater(os.path.join(self.new_folder_path, 'Sanity'))
+        self.updater = DocxUpdater(Path(self.new_folder_path)/'Sanity')
         self.date_str = time_responser('date')
 
     def new_daily_folder(self):
@@ -25,7 +26,7 @@ class Controller:
 
     def new_report(self):
         
-        daily_folder = os.path.join(self.new_folder_path,self.date_str)
+        daily_folder = Path(self.new_folder_path)/self.date_str
 
         Passed_file = csv("Passed", daily_folder)
         passed_headers = csv.passed_headers()
@@ -45,11 +46,11 @@ class Controller:
         new_folder = Master(self.new_folder_path)
         new_folder.new_master_dir()
 
-    def on_copy(self,list):
+    def on_copy(self,entry_list,signature_class):
 
         try:
-            entry_values = [entry.get() for entry in list]
-            result = self.signature.entry_combine(entry_values)
+            entry_values = [entry.get() for entry in entry_list]
+            result = signature_class.entry_combine(entry_values)
 
             pyperclip.copy(result)
         except AttributeError:

@@ -2,7 +2,6 @@ import os
 from datetime import datetime as dt
 
 
-
 def time_responser(selector):
     """
     A function to return different time components in the form of a formatted string, based on the input parameter.
@@ -41,7 +40,7 @@ def format_checker(filename: str, *formats: str) -> bool:
     """
     return filename.lower().endswith(tuple(formats))
 
-def truncate_path(path):
+def truncate_path(path: str):
     # Check if the path length exceeds the limit
     if len(path) > 40:
         # Split the path into directory and filename
