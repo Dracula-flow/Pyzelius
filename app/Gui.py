@@ -2,7 +2,6 @@
 
 import tkinter as tk
 from tkinter import ttk
-from idlelib.tooltip import Hovertip
 from app.Controller import Controller as CT
 from src.Classes import Signature, SignatureSanity, SignatureMinimal
 
@@ -39,15 +38,16 @@ class SignaturePanel(tk.Frame):
                 entry.grid(row=i, column=1, padx=10, pady=5)
                 entry_list.append(entry)
 
-            button = ttk.Button(tab, text="Copia firma (Alt+D)", command=lambda entry_list=entry_list: self.controller.on_copy(entry_list))
-            button.grid(row=len(signature_class.input_fields), column=0, columnspan=2, pady=20)
+                button = ttk.Button(tab, text="Copia firma (Alt+D)", command=lambda entry_list=entry_list, signature_class=signature_class: self.controller.on_copy(entry_list, signature_class))
+                button.grid(row=len(signature_class.input_fields), column=0, columnspan=2, pady=20)
 
 
+            # def bind_hotkey(event, entry_list=entry_list, signature_class=signature_class):
+            #     self.controller.on_copy(entry_list, signature_class)
 
-        def bind_hotkey(event, entry_list=entry_list):
-            self.controller.on_copy(entry_list)
+            # tab.bind("<Alt-d>", bind_hotkey)  # Use `tab` as the target for the hotkey binding
 
-        tab.bind("<Alt-d>", bind_hotkey)  # Use `tab` as the target for the hotkey binding
+            tab.bind("<Alt-d>", lambda event: self.controller.on_copy(entry_list,signature_class))
 
             
         tabControl.pack(expand = 1, fill ="both") 
@@ -75,7 +75,7 @@ class Gui(tk.Tk):
     def __init__(self):
         super().__init__()
         
-        self.title("Pyzelius v1.5")
+        self.title("Pyzelius v1.6.0")
         self.geometry("360x320")
 
         self.controller = CT(self)
@@ -87,11 +87,11 @@ class Gui(tk.Tk):
         menu_bar= tk.Menu(self)
 
         menu_structure = {
-            "Nuovo..." : [("Cartella giornaliera", self.controller.new_daily_folder, "Crea una cartella con la data del giorno in cui custodire le evidenze dei test"),
-                          ("Cartella Sanity", self.controller.new_sanity_folder, "Crea una cartella per la raccolta e lo smistamento delle evidenze dei Sanity"),
-                            ("Report", self.controller.new_report, "Genera un report dei test portati a termine in giornata")],
-            "Azioni..." : [("Modifica path", self.controller.new_path_folder, "Modifica il luogo in cui verranno create le cartelle Giornaliere e Sanity"),
-                           ("Smista screen Sanity", self.controller.sanity_paste, "Incolla automaticamente gli screenshot Sanity sui file Master della Cartella Sanity")
+            "Nuovo..." : [("Cartella giornaliera", self.controller.new_daily_folder),
+                          ("Cartella Sanity", self.controller.new_sanity_folder),
+                            ("Report", self.controller.new_report)],
+            "Azioni..." : [("Modifica path", self.controller.new_path_folder),
+                           ("Smista screen Sanity", self.controller.sanity_paste)
                            ],
         }
 
@@ -106,11 +106,10 @@ class Gui(tk.Tk):
        
         submenu = tk.Menu(parent_menu, tearoff=0)
        
-        for label, command, message in items:
+        for label, command in items:
            
-            menu_item = submenu.add_command(label=label, command=command)
+            submenu.add_command(label=label, command=command)
             submenu.add_separator()  # Add separator between items
-            Hovertip(menu_item,message)
         return submenu
 
     def create_widgets(self):
