@@ -229,7 +229,7 @@ class Signature():
     """
     def __init__(self):
         self.input_fields = ("Sigla", 
-                "BT",
+                "ID",
                 "APP",
                 "BUILD", 
                 "DEVICE",
@@ -256,7 +256,7 @@ class SignatureSanity(Signature):
     """
     def __init__(self):
         super().__init__()
-        self.input_fields = ("Sigla", "BT", "CLONE", "BROWSER",)  # Subclass with fewer fields
+        self.input_fields = ("Sigla", "ID", "CLONE", "BROWSER",)  # Subclass with fewer fields
 
 class SignatureMinimal(Signature):
     """
