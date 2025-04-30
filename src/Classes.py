@@ -229,7 +229,7 @@ class Signature():
     """
     def __init__(self):
         self.input_fields = ("Sigla", 
-                "BT",
+                "ID",
                 "APP",
                 "BUILD", 
                 "DEVICE",
@@ -256,7 +256,7 @@ class SignatureSanity(Signature):
     """
     def __init__(self):
         super().__init__()
-        self.input_fields = ("Sigla", "BT", "CLONE", "BROWSER",)  # Subclass with fewer fields
+        self.input_fields = ("Sigla", "ID", "CLONE", "BROWSER",)  # Subclass with fewer fields
 
 class SignatureMinimal(Signature):
     """
@@ -299,7 +299,7 @@ class Master:
             self.doc_path = Path(self.path)/f"Sanity/{elaborated}/Master.docx"
             document = Document()
             document.add_heading(rows, 2)
-            document.add_paragraph('BT=')
+            document.add_paragraph('ID=')
             document.save(self.doc_path)
         
         messagebox.showinfo(title="Cartella creata!", message="Cartella Sanity creata!")
