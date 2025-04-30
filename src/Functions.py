@@ -60,3 +60,14 @@ def truncate_path(path: str):
         
         return truncated_path
     return path  # Return the original path if no truncation is needed
+
+def apply_char_limit(entry_widget, max_length):
+    def validate(P):
+        if len(P) <= max_length:
+            return True
+        else:
+            return False
+
+    vcmd = (entry_widget.register(validate), "%P")
+    entry_widget.config(validate="key", validatecommand=vcmd)
+

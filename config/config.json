@@ -1,3 +1,13 @@
 {
-    "last_path": ""
+    "last_path": "",
+    "Devices": {
+        "1": {
+            "device": "Realme i9 5g",
+            "os": "Android 12"
+        },
+        "2": {
+            "device": "Iphone 15",
+            "os": "iOS 17.6.1"
+        }
+    }
 }
