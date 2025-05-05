@@ -1,4 +1,4 @@
-import csv,os,json,sys
+import csv,os,json,sys,re
 from pathlib import Path
 
 import pandas as pd
@@ -34,10 +34,16 @@ class CSV_File:
         """
         final_path = Path(path)/self.prefix 
         data = [f for f in final_path.iterdir() if f.is_file() and f.suffix in {'.mp4','.mov','.zip'}]
-        print(data)
-        rows = [f.stem.split("-") for f in data]
+        rows = [re.split(r"-+",f.stem) for f in data]
 
         return rows
+    
+    def to_dataframe(self,path,headers):
+        """
+        Passes the data into a dataframe
+        """
+        rows = self.create_row(path)
+        return pd.DataFrame(rows, columns=headers)
 
     def create_file(self, headers, rows):
         """
@@ -47,7 +53,6 @@ class CSV_File:
             writer = csv.writer(file)
             writer.writerow(headers)
             writer.writerows(rows)
-
 # ---------------------------------------------------------------------------------------------------------------
 
 class Report:
@@ -229,7 +234,7 @@ class Signature():
     """
     def __init__(self):
         self.input_fields = ("Sigla", 
-                "ID",
+                "BT",
                 "APP",
                 "BUILD", 
                 "DEVICE",
@@ -256,7 +261,7 @@ class SignatureSanity(Signature):
     """
     def __init__(self):
         super().__init__()
-        self.input_fields = ("Sigla", "ID", "CLONE", "BROWSER",)  # Subclass with fewer fields
+        self.input_fields = ("Sigla", "BT", "CLONE", "BROWSER",)  # Subclass with fewer fields
 
 class SignatureMinimal(Signature):
     """
@@ -295,11 +300,11 @@ class Master:
         for rows in self.df["Titolo"]:
             elaborated = truncate_path(rows)
             self.screen_path = Path(self.path)/f"Sanity/{elaborated}/Screenshots"
-            self.screen_path.mkdir()
+            self.screen_path.mkdir(parents=True,exist_ok=True)
             self.doc_path = Path(self.path)/f"Sanity/{elaborated}/Master.docx"
             document = Document()
             document.add_heading(rows, 2)
-            document.add_paragraph('ID=')
+            document.add_paragraph('BT=')
             document.save(self.doc_path)
         
         messagebox.showinfo(title="Cartella creata!", message="Cartella Sanity creata!")
