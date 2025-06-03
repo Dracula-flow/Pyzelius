@@ -30,19 +30,14 @@ class Controller:
         
         daily_folder = Path(self.new_folder_path)/self.date_str
 
-        Passed_file = csv("Passed", daily_folder)
-        passed_headers = csv.passed_headers()
-        passed_rows = Passed_file.create_row(daily_folder)
-        Passed_file.create_file(passed_headers,passed_rows)
+        Passed_data = csv("Passed", daily_folder)
+        Defect_data = csv("Defects", daily_folder)
+       
+        df_passed= Passed_data.to_dataframe(daily_folder, csv.passed_headers())
+        df_defect= Defect_data.to_dataframe(daily_folder, csv.defect_headers())
 
-        Defect_file = csv("Defects", daily_folder)
-        defect_headers = csv.defect_headers()
-        defect_rows = Defect_file.create_row(daily_folder)
-        Defect_file.create_file(defect_headers,defect_rows)
-
-        today_report = Report(rf"{daily_folder}/Report")
-        today_report.data_feed()
-        today_report.delete_csv(Passed_file.filename,Defect_file.filename)
+        today_report = Report(daily_folder/"Report")
+        today_report.data_feed(df_passed, df_defect)
 
     def new_sanity_folder(self):
         new_folder = Master(self.new_folder_path)

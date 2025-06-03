@@ -64,7 +64,7 @@ class SignaturePanel(tk.Frame):
                 entry.grid(row=i, column=1, padx=10, pady=5)
                 entry_list.append(entry)
 
-                button = ttk.Button(tab, text="Copia firma (Alt+D)", command=lambda entry_list=entry_list, signature_class=signature_class: self.controller.on_copy(entry_list, signature_class))
+                button = ttk.Button(tab, text="Copia firma", command=lambda entry_list=entry_list, signature_class=signature_class: self.controller.on_copy(entry_list, signature_class))
                 button.grid(row=len(signature_class.input_fields), column=0, columnspan=2, pady=20)
 
 
@@ -92,7 +92,7 @@ class NotePanel(tk.Frame):
     def create_widgets(self):
         noteFrame = tk.Frame(self)
         noteFrame.pack(padx=10,pady=10)
-        entryField = tk.Text(noteFrame, height=8, width=30)
+        entryField = tk.Text(noteFrame, height=8, width=25, font="Arial", relief="solid" )
         entryField.pack(padx=5, pady=5)
 
         button = ttk.Button(noteFrame, text="Copia nota (Alt+F)", command=lambda: self.controller.copy_text(entryField))
@@ -124,7 +124,7 @@ class DeviceManagerWindow(tk.Toplevel):
         self.add_button = tk.Button(self, text="Add Device",command= lambda: self.show_device_popup('add'))
         self.add_button.grid(row=1, column=0, padx=10, pady=10)
 
-        self.modify_button = tk.Button(self, text="Modify Device",command= lambda: self.show_device_popup('mod'))
+        self.modify_button = tk.Button(self, text="Modify Device",command= lambda: self.modify_selected_device())
         self.modify_button.grid(row=1, column=1, padx=10, pady=10)
 
         self.delete_button = tk.Button(self, text="Delete Device", command= self.delete_selected_device)
@@ -206,13 +206,27 @@ class DeviceManagerWindow(tk.Toplevel):
                 self.refresh_treeview()
             except ValueError as e:
                 messagebox.showerror("Error", str(e))
+    
+    def modify_selected_device(self):
+        selected_item = self.tree.focus()
+        if not selected_item:
+            messagebox.showwarning("Selection Error", "Please select a device to modify.")
+            return
+
+        values = self.tree.item(selected_item, 'values')
+        device_id = values[0]
+        device_name = values[1]
+        os_version = values[2]
+
+        self.show_device_popup('mod', device_id=device_id, current_device=device_name, current_os=os_version)
+
         
 
 class Gui(tk.Tk):
     def __init__(self):
         super().__init__()
         
-        self.title("Pyzelius v1.6.0")
+        self.title("Pyzelius v1.7.5")
         self.geometry("360x580")
 
         self.controller = CT(self)
