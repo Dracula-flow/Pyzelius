@@ -36,17 +36,43 @@ class CSV_File:
         """
         Creates an array of data based on the files in the directory passed to the method.
         """
-        final_path = path/self.prefix 
-        data = [f for f in final_path.iterdir() if f.is_file() and f.suffix in {'.mp4','.mov','.zip'}]
-        rows = [re.split(r"-+",f.stem) for f in data]
-        return rows
+        try:
+            final_path = path/self.prefix 
+            data = [f for f in final_path.iterdir() if f.is_file() and f.suffix.lower() in {'.mp4','.mov','.zip'}]
+            rows =[]
+            for f in data:
+                parts = re.split(r"-+",f.stem)
+        
+                if self.prefix == "Passed":
+                    if len(parts) == 4:
+                        parts.append(None) 
+                    elif len(parts) != 5:
+                        print(f"Skipping file (unexpected format): {f.name}")
+                        continue
+
+            # If it's "Defects", all 5 parts are mandatory
+                elif self.prefix == "Defects" and len(parts) != 5:
+                    print(f"Skipping file (invalid defect format): {f.name}")
+                    continue
+
+                rows.append(parts)
+            
+            print(rows)
+            return rows
+        except ValueError:
+            pass
     
     def to_dataframe(self, path:Path ,headers: list[str])-> pd.DataFrame:
         """
         Passes the data into a dataframe
         """
-        rows = self.create_row(path)
-        return pd.DataFrame(rows, columns=headers)
+        try:
+            rows = self.create_row(path)
+            print("to dataframe ok")
+            return pd.DataFrame(rows, columns=headers)
+
+        except Exception as e:
+            print(e)
 
 # ---------------------------------------------------------------------------------------------------------------
 
@@ -69,7 +95,6 @@ class Report:
             
             # CReates the xlsx file and writes the Passed data 
             df_passed.to_excel(self.filename, index=False, sheet_name="Passed")
-            
             with pd.ExcelWriter(self.filename, engine="openpyxl", mode="a") as writer:
 
                  # Writes the Defects data
