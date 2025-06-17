@@ -1,22 +1,26 @@
-import csv,os,json,sys,re
+import os,json,sys,re
 from pathlib import Path
+import time
+from tkinter import filedialog,messagebox
 
 import pandas as pd
 import openpyxl as op
+from openpyxl.worksheet.table import Table, TableStyleInfo
 from docx import Document
 from docx.shared import Inches
 from PIL import Image
-from tkinter import filedialog,messagebox
+from watchdog.events import FileSystemEventHandler
 
 from src.Functions import time_responser, truncate_path
 
 class CSV_File:
     """
-    Creates two CSV files, using as basis the video files present in a folder. This class works together with the 'Report' class.
+    Creates two dataframes with the evidence data from the "Passed" and "Defects" folders in the Worktree. 
+    This class works together with the 'Report' class.
     """
-    def __init__(self, prefix, path):
+    def __init__(self, prefix:str, path:Path):
         self.prefix = prefix
-        self.filename = f"{path}/Report/{self.prefix}_{time_responser('date')}.csv"
+        self.path = path
     
     @classmethod
     def passed_headers(cls):
@@ -28,31 +32,22 @@ class CSV_File:
         headers = ["Slot", "OS", "Clone","Test","Defect ID"]
         return headers
     
-    def create_row(self,path):
+    def create_row(self,path:Path):
         """
         Creates an array of data based on the files in the directory passed to the method.
         """
-        final_path = Path(path)/self.prefix 
+        final_path = path/self.prefix 
         data = [f for f in final_path.iterdir() if f.is_file() and f.suffix in {'.mp4','.mov','.zip'}]
         rows = [re.split(r"-+",f.stem) for f in data]
-
         return rows
     
-    def to_dataframe(self,path,headers):
+    def to_dataframe(self, path:Path ,headers: list[str])-> pd.DataFrame:
         """
         Passes the data into a dataframe
         """
         rows = self.create_row(path)
         return pd.DataFrame(rows, columns=headers)
 
-    def create_file(self, headers, rows):
-        """
-        Writes the CSV file with the specified parameters.
-        """
-        with open(self.filename, mode='w', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow(headers)
-            writer.writerows(rows)
 # ---------------------------------------------------------------------------------------------------------------
 
 class Report:
@@ -60,39 +55,35 @@ class Report:
     Creates an .xlsx file, printing two Pandas Dataframes on two different sheets. 
     The data in the dataframes must be supplied via the CSV_File class.
     """
-    def __init__(self,path):
+    def __init__(self,path: Path):
         self.date_str = time_responser('date')
         self.path = path
-        self.filename = Path(self.path)/f'Report_{self.date_str}.xlsx'
-        self.passed = Path(self.path)/f'Passed_{self.date_str}.csv'
-        self.defects = Path(self.path)/f'Defects_{self.date_str}.csv'
+        self.filename = self.path/f'Report_{self.date_str}.xlsx'
 
-    def data_feed(self):
+
+    def data_feed(self, df_passed:pd.DataFrame, df_defect:pd.DataFrame):
         """
         Creates the .xlsx file and loads the data from the CSV into it.
         """
-        # pd.read_csv doesn't like utf-8. latin-1 encoding solves the problem.
         try:
-            # Writes the Passed data
-            df_passed = pd.read_csv(self.passed, dtype={'Slot':str,'OS':str,'Clone':str, 'Test':str, 'Retest':str}, encoding='latin-1')
-            df_passed.to_excel(self.filename, index=True, sheet_name="Passed")
-
-            # Writes the Defects data
-            df_defect = pd.read_csv(self.defects, dtype={'Slot':str,'OS':str,'Clone':str, 'Test':str, 'Defect ID':str}, encoding='latin-1')
+            
+            # CReates the xlsx file and writes the Passed data 
+            df_passed.to_excel(self.filename, index=False, sheet_name="Passed")
+            
             with pd.ExcelWriter(self.filename, engine="openpyxl", mode="a") as writer:
-                df_defect.to_excel(writer, index=True,sheet_name="Defects")
+
+                 # Writes the Defects data
+                df_defect.to_excel(writer, index=False, sheet_name="Defects")
             
             # Loads the sheets to an Openpyxl workbook
             wb = op.load_workbook(self.filename)
 
-            # Defines the two sheets inside the file
-            ws1= wb["Passed"]
-            ws2= wb["Defects"]
+            for sheet_name in ["Passed","Defects"]:
+            # Defines the two sheets inside the file and formats the columns
+                ws = wb[sheet_name]
+                self.adjust_column_width(ws)
+                self.convert_to_table(ws)
 
-            # Formats the columns
-            self.adjust_column_width(ws1)
-            self.adjust_column_width(ws2)
-            
             # Saves the file
             wb.save(self.filename)
             messagebox.showinfo(title="Report creato!", message=f"Il report {self.date_str} è stato creato con successo!")
@@ -117,17 +108,27 @@ class Report:
                 # That's gonna happen sometimes, so it's pass.
             except TypeError:
                 pass
-
-
-    def delete_csv(self,csv_1,csv_2):
+    
+    def convert_to_table(self, worksheet):
         """
-        Deletes the CSV files. To be used after Report generation.
+        Converts the used range of the worksheet into an Excel table with styling.
         """
-        if Path(csv_1).is_file():
-            Path(csv_1).unlink()
-        if Path(csv_2).is_file():
-            Path(csv_2).unlink()
-            
+        max_row = worksheet.max_row
+        max_col = worksheet.max_column
+        if max_row < 2:
+            return  # No data to table-ify
+
+        ref = f"A1:{worksheet.cell(row=max_row, column=max_col).coordinate}"
+        table = Table(displayName=f"Table_{worksheet.title}", ref=ref)
+
+        # Apply a table style
+        style = TableStyleInfo(
+            name="TableStyleMedium2", showFirstColumn=False,
+            showLastColumn=False, showRowStripes=True, showColumnStripes=False
+        )
+        table.tableStyleInfo = style
+
+        worksheet.add_table(table)
 # ------------------------------------------------------------------------------------------------------------------------
 
 class WorkTree:
@@ -149,7 +150,7 @@ class WorkTree:
             messagebox.showerror(title="Errore!",message=f"La cartella {self.dirname} esiste già nella destinazione!")
 
         for subdir in self.subdirs:
-            subdir_path = Path(root_path)/subdir
+            subdir_path = root_path/subdir
             Path.mkdir(subdir_path)
 
 # -------------------------------------------------------------------------------------------------------------------
@@ -180,7 +181,14 @@ class Pathfinder:
             config_folder = Path.home()/'pyzelius_config'
             if not Path.exists(config_folder):
                 config_folder.mkdir(parents=True, exist_ok=False)
-            return Path(config_folder)/'config.json' 
+            config_path = config_folder/"config.json"
+
+            if not config_path.exists():
+                default_config = {}  # or provide a meaningful default structure
+                with config_path.open('w', encoding='utf-8') as f:
+                    json.dump(default_config, f, indent=4)
+            return config_path
+            
         else:
             # If running as a Python script, use the relative path
             return Path(__file__).resolve().parent.parent / 'config/config.json'
@@ -222,7 +230,9 @@ class Pathfinder:
         if new_path:
             self.last_path = new_path
             self.save_last_path()
-
+            return new_path
+        return None
+    
     def get_path(self):
         return self.last_path
     
@@ -272,7 +282,7 @@ class SignatureMinimal(Signature):
         self.input_fields = ("Sigla",) # The comma is necessary, otherwise the entry_combine will interpret this as a string to split
 # -----------------------------------------------------------------------------------------------------------------------------------------
 
-class Master:
+class SanityTree:
     """
     Creates a directory based on a .xlsx file.
 
@@ -299,9 +309,10 @@ class Master:
         
         for rows in self.df["Titolo"]:
             elaborated = truncate_path(rows)
-            self.screen_path = Path(self.path)/f"Sanity/{elaborated}/Screenshots"
+            base = Path(self.path)/"Sanity"/elaborated
+            self.screen_path = base /"Screenshots"
             self.screen_path.mkdir(parents=True,exist_ok=True)
-            self.doc_path = Path(self.path)/f"Sanity/{elaborated}/Master.docx"
+            self.doc_path = base /"Master.docx"
             document = Document()
             document.add_heading(rows, 2)
             document.add_paragraph('BT=')
@@ -328,7 +339,7 @@ class DocxUpdater:
         Get all subfolders that contain a 'Screenshots' directory.
         """
         screenshot_folders = []
-        for root, dirs, files in self.root_dir.walk():
+        for root, dirs, files in os.walk(self.root_dir):
             if 'Screenshots' in dirs and 'Master.docx' in files:
                 screenshot_folders.append(root)
         return screenshot_folders
@@ -345,14 +356,28 @@ class DocxUpdater:
             for file in screenshots_path.iterdir():
                 
                 #  Can we put something here to rename the img files? This way, we may avoid the issue with long paths.
-                if file.suffix in {'png','.jpg'}:
-                    png_path = Path(screenshots_path)/file 
-                    creation_time = png_path.stat().st_birthtime
+                if file.suffix.lower() in {'.png','.jpg'}:
+                    png_path = file
+                    try: 
+                        creation_time = png_path.stat().st_birthtime
+                    except AttributeError:
+                        creation_time = png_path.stat().st_ctime
                     png_files.append((file, creation_time))
         
         # Sort by creation time
         png_files.sort(key=lambda x: x[1])
-        return [Path(screenshots_path)/ file[0] for file in png_files]
+        return [file[0] for file in png_files]
+    
+    def docx_contains_images(self,docx_path):
+        """
+        Returns True if the .docx file contains any inline images.
+        """
+        try:
+            doc = Document(docx_path)
+            return len(doc.inline_shapes) > 0
+        except Exception as e:
+            print(f"Error reading {docx_path}: {e}")
+            return False
 
     def insert_images_to_docx(self, docx_path, png_files):
         """
@@ -364,10 +389,10 @@ class DocxUpdater:
         # Is the truncation needed here?
         for png_file in png_files:
             # Open the image
-            img = Image.open(png_file)
+            img = Image.open(str(png_file))
             width, height = img.size
             # Insert image into the docx file
-            doc.add_picture(png_file, width=Inches(5))
+            doc.add_picture(str(png_file), width=Inches(5))
             doc.add_paragraph(f"\n")
         
         doc.save(docx_path)
@@ -377,16 +402,16 @@ class DocxUpdater:
         Iterates over all folders and inserts the screenshots into the corresponding Master.docx files.
         """
         folders = self.get_screenshot_folders()
-        
+       
         try:
             for folder in folders:
-                docx_path = Path(folder)/'Master.docx' 
-                # Checks rudimentally if the Master has images in it
-                if os.path.getsize(docx_path) <= 36000:
+                docx_path = Path(folder)/'Master.docx'
 
+                if not self.docx_contains_images(docx_path):
+                
                 # Get the .png files sorted by creation time
                     png_files = self.get_img_files(folder)
-                
+    
                 # Insert the .png files into the Example.docx file
                     self.insert_images_to_docx(docx_path, png_files)
 
@@ -471,3 +496,36 @@ class DeviceUpdater:
         except (FileNotFoundError, json.JSONDecodeError) as e:
             print(f"Error loading devices: {e}")
 
+#------------------------------------------------------------------------------------------------------------
+
+class Archiver(FileSystemEventHandler):
+    """
+    Automatically renames video files with a template inserted by the user. Works in conjunction with the Watcher class.
+    """
+    def __init__(self, template:str):
+        super().__init__()
+        self.template=template
+        self.VIDEO_EXTENSIONS = ('.mp4','.mov')
+
+    def on_created(self, event):
+        # Delay to ensure file is fully copied
+        time.sleep(1)
+
+        if event.is_directory:
+            return 
+        
+        file_path = Path(event.src_path)
+        if file_path.suffix.lower() in self.VIDEO_EXTENSIONS:
+            folder = file_path.parent
+            timestamp = time_responser("time")
+            safe_timestamp = timestamp.replace(":",".")
+
+            template_str = self.template.strip() if self.template.strip() else "Video"
+            
+            new_name = f"{template_str} - {safe_timestamp}{file_path.suffix}"
+            new_path = folder / new_name
+            try:
+                file_path.rename(new_path)
+                print(f"Renamed: {file_path} -> {new_path}")
+            except Exception as e:
+                print(f"Error renaming file {file_path}: {e}")
