@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
-from app.Controllerv2 import Controller as CT
-from src.Classes import Signature, SignatureSanity, SignatureMinimal
+from controller.ControllerV3 import ControllerV3 as CT
+from src.Signature import Signature, SignatureSanity, SignatureMinimal
 from src.Functions import apply_char_limit
 
 class WatcherPanel(tk.Frame):
@@ -87,7 +87,7 @@ class SignatureTab(ttk.Frame):
         values = [e.get() for e in self.entry_list]
         if self.os_entry:
             values.insert(self.signature_class.input_fields.index("OS"), self.os_entry.get())
-        self.controller.on_copy(values,self.signature_class)
+        self.controller.on_copy_signature(values,self.signature_class)
 
 
 class SignaturePanel(tk.Frame):
@@ -202,7 +202,7 @@ class DeviceManagerWindow(tk.Toplevel):
         confirm = messagebox.askyesno("Confirm Delete", f"Delete device '{device_name}' (ID: {device_id})?")
         if confirm:
             try:
-                self.controller.device_manager_commands("delete", id=str(device_id))
+                self.controller.device_command("delete", id=str(device_id))
                 self.populate_tree()
             except ValueError as e:
                 messagebox.showerror("Error", str(e))
@@ -253,9 +253,9 @@ class DevicePopup(tk.Toplevel):
 
         try:
             if self.action == "add":
-                self.controller.device_manager_commands("add", device=device_name, os=os_version)
+                self.controller.device_command("add", device=device_name, os=os_version)
             elif self.action == "modify":
-                self.controller.device_manager_commands("modify", id=self.device_id, device=device_name, os=os_version)
+                self.controller.device_command("modify", id=self.device_id, device=device_name, os=os_version)
         except Exception as e:
             messagebox.showerror("Error", str(e))
         else:
@@ -312,7 +312,7 @@ class Gui(tk.Tk):
             "Nuovo...": [
                 ("Cartella giornaliera", self.controller.new_daily_folder),
                 ("Cartella Sanity", self.controller.new_sanity_folder),
-                ("Report", self.controller.new_report),
+                ("Report", self.controller.generate_report),
             ],
             "Azioni...": [
                 ("Modifica path", self.controller.update_path),
