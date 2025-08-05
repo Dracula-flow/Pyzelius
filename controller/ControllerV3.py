@@ -3,7 +3,7 @@
 from pathlib import Path
 from typing import Optional, List
 
-from src import Pathfinder as PF, Worktree as WT
+from src import Pathfinder as PF, WorkTree as WT
 from src.Functions import time_responser
 
 from .DeviceController import DeviceController
@@ -74,11 +74,11 @@ class ControllerV3:
     #---------------------- Folder Watching --------------------------------
 
     def start_watching(self, entry_widget: object, label_widget: object) -> None:
-        self.watcher_controller.start(entry_widget)
+        self.watcher_controller.start_watching(entry_widget)
         label_widget.config(text="RENAMER: ON")
 
     def stop_watching(self, label_widget: object) -> None:
-        self.watcher_controller.stop()
+        self.watcher_controller.stop_watching()
         label_widget.config(text="RENAMER: OFF")
 
     # ---------------------------Base Path Update-----------------------------
