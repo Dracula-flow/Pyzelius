@@ -33,19 +33,20 @@ class SignatureTab(ttk.Frame):
     """
     A single tab within the SignaturePanel.
     """
-    def __init__(self, parent, signature_class, config_data, controller):
+    def __init__(self, parent, mode:str, config_data, controller):
         super().__init__(parent)
-        self.signature_class = signature_class
+        self.mode = mode
         self.controller = controller
         self.config_data = config_data
         self.entry_list = []
         self.os_entry = None
-
+        self.input_fields = self.controller.get_signature_fields(mode)
+        
         self.build_fields()
         self.build_button()
 
     def build_fields(self):
-        for i, field in enumerate(self.signature_class.input_fields):
+        for i, field in enumerate(self.input_fields):
             ttk.Label(self, text=field).grid(row=i, column=0, padx=10, pady=5)
 
             entry = self.get_field_widget(field, i)
@@ -81,13 +82,13 @@ class SignatureTab(ttk.Frame):
 
     def build_button(self):
         btn = ttk.Button(self, text="Copia firma", command=self.on_copy)
-        btn.grid(row=len(self.signature_class.input_fields), column=0, columnspan=2, pady=20)
+        btn.grid(row=len(self.input_fields), column=0, columnspan=2, pady=20)
 
     def on_copy(self):
         values = [e.get() for e in self.entry_list]
         if self.os_entry:
-            values.insert(self.signature_class.input_fields.index("OS"), self.os_entry.get())
-        self.controller.on_copy_signature(values,self.signature_class)
+            values.insert(self.input_fields.index("OS"), self.os_entry.get())
+        self.controller.on_copy_signature(values,self.mode)
 
 
 class SignaturePanel(tk.Frame):
@@ -99,15 +100,11 @@ class SignaturePanel(tk.Frame):
 
     def create_widgets(self):
         tab_control = ttk.Notebook(self)
-        signature_types = [
-            ("Full", Signature()),
-            ("Sanity", SignatureSanity()),
-            ("Simple", SignatureMinimal())
-        ]
+        signature_types = ["Full","Sanity","Simple"]
 
-        for name, sig in signature_types:
-            tab = SignatureTab(tab_control, sig, self.config_data, self.controller)
-            tab_control.add(tab, text=name)
+        for mode in signature_types:
+            tab = SignatureTab(tab_control, mode, self.config_data, self.controller)
+            tab_control.add(tab, text=mode)
             tab.bind("<Alt-d>", lambda e: tab.on_copy())
 
         tab_control.pack(expand=1, fill="none")
