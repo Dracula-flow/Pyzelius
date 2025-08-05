@@ -10,7 +10,7 @@ from src.Functions import time_responser
 class Watcher:
     def __init__(self, path: Path):
         self.path = path
-        self.observer: Optional[Observer] = None
+        self.observer: Optional[Observer] = None # type: ignore
 
     def start_watching(self, entry:object):
         template = entry.get().strip()
@@ -67,13 +67,13 @@ class Controller:
         self, 
         root: object,
         pathfinder: Optional[PF] = None,
-        signature: Optional[SI] = None,
+        # signature: Optional[SI] = None,
         device_controller: Optional[DeviceController] = None,
         updater: Optional[DocxUpdater] = None,
     ):
         self.root = root
         self.pathfinder = pathfinder or PF()
-        self.signature = signature or SI()
+        # self.signature = signature or SI()
         self.config = self.pathfinder.get_config_path()
         self.new_folder_path = self.pathfinder.get_path()
         self.updater = updater or DocxUpdater(Path(self.new_folder_path) / 'Sanity')
@@ -81,16 +81,16 @@ class Controller:
         self.watcher = Watcher(self.new_folder_path)
         self.date_str = time_responser('date')
 
-    def on_copy(self, entry_values: List[str]) -> None:
+    def on_copy(self, entry_values: List[str], signature:SI) -> None:
         """
         Combine entries via signature class and copy result to clipboard.
         Controller is agnostic of GUI widgets.
         """
         try:
-            result = self.signature.entry_combine(entry_values)
+            result = signature.entry_combine(entry_values)
             pyperclip.copy(result)
         except AttributeError:
-            print("Error: signature.combine failed.")
+            print("Error: signature.entry_combine failed.")
 
     def copy_text(self, text: str) -> None:
         """Copy given text string to clipboard."""
