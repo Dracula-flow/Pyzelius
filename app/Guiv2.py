@@ -87,7 +87,7 @@ class SignatureTab(ttk.Frame):
         values = [e.get() for e in self.entry_list]
         if self.os_entry:
             values.insert(self.signature_class.input_fields.index("OS"), self.os_entry.get())
-        self.controller.on_copy(values)
+        self.controller.on_copy(values,self.signature_class)
 
 
 class SignaturePanel(tk.Frame):
