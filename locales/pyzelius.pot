@@ -1,0 +1,282 @@
+# Translations template for PROJECT.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-08-03 07:45+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: app/DeviceManagerWindow.py:15 app/GuiV3.py:66
+msgid "Device Manager"
+msgstr ""
+
+#: app/DeviceManagerWindow.py:31 app/DevicePopup.py:16
+msgid "Add Device"
+msgstr ""
+
+#: app/DeviceManagerWindow.py:32 app/DevicePopup.py:16
+msgid "Modify Device"
+msgstr ""
+
+#: app/DeviceManagerWindow.py:33
+msgid "Delete Device"
+msgstr ""
+
+#: app/DeviceManagerWindow.py:51 app/DeviceManagerWindow.py:69
+msgid "Selection Error"
+msgstr ""
+
+#: app/DeviceManagerWindow.py:51
+msgid "Please select a device to modify."
+msgstr ""
+
+#: app/DeviceManagerWindow.py:69
+msgid "Please select a device to delete."
+msgstr ""
+
+#: app/DeviceManagerWindow.py:76
+msgid "Confirm Delete"
+msgstr ""
+
+#: app/DeviceManagerWindow.py:77
+#, python-brace-format
+msgid "Delete device '{name}' (ID: {id})?"
+msgstr ""
+
+#: app/DeviceManagerWindow.py:84 app/DevicePopup.py:55 src/DocxUpdater.py:105
+#: src/Signature.py:26
+msgid "Error"
+msgstr ""
+
+#: app/DeviceManagerWindow.py:93
+msgid "ID"
+msgstr ""
+
+#: app/DeviceManagerWindow.py:93
+msgid "Device"
+msgstr ""
+
+#: app/DeviceManagerWindow.py:93 src/Signature.py:59
+msgid "OS"
+msgstr ""
+
+#: app/DevicePopup.py:27
+msgid "Device:"
+msgstr ""
+
+#: app/DevicePopup.py:32
+msgid "OS:"
+msgstr ""
+
+#: app/DevicePopup.py:37
+msgid "Add"
+msgstr ""
+
+#: app/DevicePopup.py:37
+msgid "Modify"
+msgstr ""
+
+#: app/DevicePopup.py:46
+msgid "Input Error"
+msgstr ""
+
+#: app/DevicePopup.py:46
+msgid "Both fields must be filled!"
+msgstr ""
+
+#: app/GuiV3.py:58
+msgid "New..."
+msgstr ""
+
+#: app/GuiV3.py:59
+msgid "Daily folder"
+msgstr ""
+
+#: app/GuiV3.py:60
+msgid "Sanity folder"
+msgstr ""
+
+#: app/GuiV3.py:61
+msgid "Report"
+msgstr ""
+
+#: app/GuiV3.py:63
+msgid "Actions..."
+msgstr ""
+
+#: app/GuiV3.py:64
+msgid "Change path"
+msgstr ""
+
+#: app/GuiV3.py:65
+msgid "Sort Sanity screenshots"
+msgstr ""
+
+#: app/GuiV3.py:74
+msgid "Language"
+msgstr ""
+
+#: app/NotePanel.py:19
+msgid "Copy note (Alt+F)"
+msgstr ""
+
+#: app/SignaturePanel.py:36
+msgid "Application"
+msgstr ""
+
+#: app/SignaturePanel.py:36
+msgid "Performance"
+msgstr ""
+
+#: app/SignaturePanel.py:36
+msgid "Post Release"
+msgstr ""
+
+#: app/SignaturePanel.py:36
+msgid "System"
+msgstr ""
+
+#: app/SignaturePanel.py:36
+msgid "User Acceptance"
+msgstr ""
+
+#: app/SignaturePanel.py:61
+msgid "Copy signature"
+msgstr ""
+
+#: app/SignaturePanel.py:96
+msgid "Full"
+msgstr ""
+
+#: app/SignaturePanel.py:96
+msgid "Sanity"
+msgstr ""
+
+#: app/SignaturePanel.py:96
+msgid "Simple"
+msgstr ""
+
+#: app/WatcherPanel.py:17
+msgid "Renamer template:"
+msgstr ""
+
+#: app/WatcherPanel.py:20 controller/ControllerV3.py:86
+msgid "Renamer: OFF"
+msgstr ""
+
+#: app/WatcherPanel.py:23
+msgid "Start"
+msgstr ""
+
+#: app/WatcherPanel.py:26
+msgid "Stop"
+msgstr ""
+
+#: controller/ControllerV3.py:82
+msgid "Renamer: ON"
+msgstr ""
+
+#: src/DocxUpdater.py:103
+msgid "Success!"
+msgstr ""
+
+#: src/DocxUpdater.py:103
+msgid "Sorting successful! Check the master files!"
+msgstr ""
+
+#: src/DocxUpdater.py:105
+#, python-brace-format
+msgid "Something went wrong: {error}"
+msgstr ""
+
+#: src/Pathfinder.py:72 src/ReportMaker.py:115 src/Worktree.py:26
+msgid "Error!"
+msgstr ""
+
+#: src/Pathfinder.py:72
+msgid "Permission error in attempt to write to the configuration file."
+msgstr ""
+
+#: src/ReportMaker.py:110
+msgid "Report created!"
+msgstr ""
+
+#: src/ReportMaker.py:111
+#, python-brace-format
+msgid "Report {date} was created successfully!"
+msgstr ""
+
+#: src/ReportMaker.py:115
+msgid "A file does not respect the format!"
+msgstr ""
+
+#: src/SanityTree.py:46 src/Worktree.py:21
+msgid "Folder created!"
+msgstr ""
+
+#: src/SanityTree.py:46
+msgid "Sanity folder created!"
+msgstr ""
+
+#: src/Signature.py:26
+#, python-brace-format
+msgid "Invalid input - {field}"
+msgstr ""
+
+#: src/Signature.py:28
+msgid "DATA E ORA"
+msgstr ""
+
+#: src/Signature.py:59
+msgid "Sigla"
+msgstr ""
+
+#: src/Signature.py:59
+msgid "BT"
+msgstr ""
+
+#: src/Signature.py:59
+msgid "APP"
+msgstr ""
+
+#: src/Signature.py:59
+msgid "BUILD"
+msgstr ""
+
+#: src/Signature.py:59
+msgid "DEVICE"
+msgstr ""
+
+#: src/Signature.py:60
+msgid "Puntamento"
+msgstr ""
+
+#: src/Signature.py:60
+msgid "CLONE"
+msgstr ""
+
+#: src/Signature.py:60
+msgid "BROWSER"
+msgstr ""
+
+#: src/Worktree.py:22
+#, python-brace-format
+msgid "Folder {name} created!"
+msgstr ""
+
+#: src/Worktree.py:27
+#, python-brace-format
+msgid "Folder {name} already exists at destination!"
+msgstr ""
+

@@ -1,0 +1,282 @@
+# Russian translations for PROJECT.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-08-03 07:45+0000\n"
+"PO-Revision-Date: 2026-08-03 07:45+0000\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: ru <LL@li.org>\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Generated-By: Babel 2.18.0\n"
+
+#: app/DeviceManagerWindow.py:15 app/GuiV3.py:66
+msgid "Device Manager"
+msgstr "Менеджер устройств"
+
+#: app/DeviceManagerWindow.py:31 app/DevicePopup.py:16
+msgid "Add Device"
+msgstr "Добавить устройство"
+
+#: app/DeviceManagerWindow.py:32 app/DevicePopup.py:16
+msgid "Modify Device"
+msgstr "Изменить устройство"
+
+#: app/DeviceManagerWindow.py:33
+msgid "Delete Device"
+msgstr "Удалить устройство"
+
+#: app/DeviceManagerWindow.py:51 app/DeviceManagerWindow.py:69
+msgid "Selection Error"
+msgstr "Ошибка выбора"
+
+#: app/DeviceManagerWindow.py:51
+msgid "Please select a device to modify."
+msgstr "Выберите устройство для изменения."
+
+#: app/DeviceManagerWindow.py:69
+msgid "Please select a device to delete."
+msgstr "Выберите устройство для удаления."
+
+#: app/DeviceManagerWindow.py:76
+msgid "Confirm Delete"
+msgstr "Подтвердите удаление"
+
+#: app/DeviceManagerWindow.py:77
+#, python-brace-format
+msgid "Delete device '{name}' (ID: {id})?"
+msgstr "Удалить устройство «{name}» (ID: {id})?"
+
+#: app/DeviceManagerWindow.py:84 app/DevicePopup.py:55 src/DocxUpdater.py:105
+#: src/Signature.py:26
+msgid "Error"
+msgstr "Ошибка"
+
+#: app/DeviceManagerWindow.py:93
+msgid "ID"
+msgstr "ID"
+
+#: app/DeviceManagerWindow.py:93
+msgid "Device"
+msgstr "Устройство"
+
+#: app/DeviceManagerWindow.py:93 src/Signature.py:59
+msgid "OS"
+msgstr "ОС"
+
+#: app/DevicePopup.py:27
+msgid "Device:"
+msgstr "Устройство:"
+
+#: app/DevicePopup.py:32
+msgid "OS:"
+msgstr "ОС:"
+
+#: app/DevicePopup.py:37
+msgid "Add"
+msgstr "Добавить"
+
+#: app/DevicePopup.py:37
+msgid "Modify"
+msgstr "Изменить"
+
+#: app/DevicePopup.py:46
+msgid "Input Error"
+msgstr "Ошибка ввода"
+
+#: app/DevicePopup.py:46
+msgid "Both fields must be filled!"
+msgstr "Оба поля должны быть заполнены!"
+
+#: app/GuiV3.py:58
+msgid "New..."
+msgstr "Новый..."
+
+#: app/GuiV3.py:59
+msgid "Daily folder"
+msgstr "Ежедневная папка"
+
+#: app/GuiV3.py:60
+msgid "Sanity folder"
+msgstr "Папка Sanity"
+
+#: app/GuiV3.py:61
+msgid "Report"
+msgstr "Отчёт"
+
+#: app/GuiV3.py:63
+msgid "Actions..."
+msgstr "Действия..."
+
+#: app/GuiV3.py:64
+msgid "Change path"
+msgstr "Изменить путь"
+
+#: app/GuiV3.py:65
+msgid "Sort Sanity screenshots"
+msgstr "Распределить скриншоты Sanity"
+
+#: app/GuiV3.py:74
+msgid "Language"
+msgstr "Язык"
+
+#: app/NotePanel.py:19
+msgid "Copy note (Alt+F)"
+msgstr "Скопировать заметку (Alt+F)"
+
+#: app/SignaturePanel.py:36
+msgid "Application"
+msgstr "Приложение"
+
+#: app/SignaturePanel.py:36
+msgid "Performance"
+msgstr "Производительность"
+
+#: app/SignaturePanel.py:36
+msgid "Post Release"
+msgstr "После релиза"
+
+#: app/SignaturePanel.py:36
+msgid "System"
+msgstr "Система"
+
+#: app/SignaturePanel.py:36
+msgid "User Acceptance"
+msgstr "Приёмочное тестирование"
+
+#: app/SignaturePanel.py:61
+msgid "Copy signature"
+msgstr "Скопировать подпись"
+
+#: app/SignaturePanel.py:96
+msgid "Full"
+msgstr "Полная"
+
+#: app/SignaturePanel.py:96
+msgid "Sanity"
+msgstr "Sanity"
+
+#: app/SignaturePanel.py:96
+msgid "Simple"
+msgstr "Простая"
+
+#: app/WatcherPanel.py:17
+msgid "Renamer template:"
+msgstr "Шаблон переименования:"
+
+#: app/WatcherPanel.py:20 controller/ControllerV3.py:86
+msgid "Renamer: OFF"
+msgstr "Переименование: ВЫКЛ"
+
+#: app/WatcherPanel.py:23
+msgid "Start"
+msgstr "Старт"
+
+#: app/WatcherPanel.py:26
+msgid "Stop"
+msgstr "Стоп"
+
+#: controller/ControllerV3.py:82
+msgid "Renamer: ON"
+msgstr "Переименование: ВКЛ"
+
+#: src/DocxUpdater.py:103
+msgid "Success!"
+msgstr "Готово!"
+
+#: src/DocxUpdater.py:103
+msgid "Sorting successful! Check the master files!"
+msgstr "Сортировка завершена! Проверьте мастер-файлы!"
+
+#: src/DocxUpdater.py:105
+#, python-brace-format
+msgid "Something went wrong: {error}"
+msgstr "Что-то пошло не так: {error}"
+
+#: src/Pathfinder.py:72 src/ReportMaker.py:115 src/Worktree.py:26
+msgid "Error!"
+msgstr "Ошибка!"
+
+#: src/Pathfinder.py:72
+msgid "Permission error in attempt to write to the configuration file."
+msgstr "Ошибка доступа при попытке записи файла конфигурации."
+
+#: src/ReportMaker.py:110
+msgid "Report created!"
+msgstr "Отчёт создан!"
+
+#: src/ReportMaker.py:111
+#, python-brace-format
+msgid "Report {date} was created successfully!"
+msgstr "Отчёт за {date} успешно создан!"
+
+#: src/ReportMaker.py:115
+msgid "A file does not respect the format!"
+msgstr "Один из файлов не соответствует требуемому формату!"
+
+#: src/SanityTree.py:46 src/Worktree.py:21
+msgid "Folder created!"
+msgstr "Папка создана!"
+
+#: src/SanityTree.py:46
+msgid "Sanity folder created!"
+msgstr "Папка Sanity создана!"
+
+#: src/Signature.py:26
+#, python-brace-format
+msgid "Invalid input - {field}"
+msgstr "Неверный ввод — {field}"
+
+#: src/Signature.py:28
+msgid "DATA E ORA"
+msgstr "ДАТА И ВРЕМЯ"
+
+#: src/Signature.py:59
+msgid "Sigla"
+msgstr "Инициалы"
+
+#: src/Signature.py:59
+msgid "BT"
+msgstr "BT"
+
+#: src/Signature.py:59
+msgid "APP"
+msgstr "APP"
+
+#: src/Signature.py:59
+msgid "BUILD"
+msgstr "BUILD"
+
+#: src/Signature.py:59
+msgid "DEVICE"
+msgstr "УСТРОЙСТВО"
+
+#: src/Signature.py:60
+msgid "Puntamento"
+msgstr "Тип теста"
+
+#: src/Signature.py:60
+msgid "CLONE"
+msgstr "CLONE"
+
+#: src/Signature.py:60
+msgid "BROWSER"
+msgstr "BROWSER"
+
+#: src/Worktree.py:22
+#, python-brace-format
+msgid "Folder {name} created!"
+msgstr "Папка {name} создана!"
+
+#: src/Worktree.py:27
+#, python-brace-format
+msgid "Folder {name} already exists at destination!"
+msgstr "Папка {name} уже существует по этому пути!"
