@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 
+import sv_ttk 
+
 from .DeviceManagerWindow import DeviceManagerWindow
 from .NotePanel import NotePanel
 from .SignaturePanel import SignaturePanel
@@ -13,7 +15,7 @@ class Gui(tk.Tk):
     def __init__(self):
         super().__init__()
 
-        self.title("Pyzelius v1.8.0")
+        self.title("Pyzelius v2.0.0")
         self.geometry("360x650")
 
         self.controller = CT(self)
@@ -27,7 +29,7 @@ class Gui(tk.Tk):
         Central place to manage ttk styles for consistent theming.
         """
         style = ttk.Style(self)
-        style.theme_use("vista")  # Try 'clam', 'default', 'alt', or 'vista'
+        sv_ttk.set_theme("light")  # Try 'clam', 'default', 'alt', or 'vista'
 
         style.configure("TButton",
                         font=("Arial", 10),
