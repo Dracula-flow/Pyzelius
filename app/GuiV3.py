@@ -16,7 +16,7 @@ class Gui(tk.Tk):
         super().__init__()
 
         self.title("Pyzelius v2.0.0")
-        self.geometry("360x650")
+        self.geometry("650x680")
 
         self.controller = CT(self)
 
